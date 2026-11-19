@@ -24,7 +24,6 @@ const bytesOf = (text, encoding = 'utf-8') => {
     const body = Buffer.from(text, 'utf16le');
     return new Uint8Array(Buffer.concat([Buffer.from([0xff, 0xfe]), body]));
   }
-  if (encoding === 'euc-kr') return new Uint8Array(Buffer.from(text, 'euc-kr')); // Node는 CP949로 인코딩
   throw new Error(`지원하지 않는 테스트 인코딩: ${encoding}`);
 };
 
