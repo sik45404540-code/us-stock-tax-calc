@@ -13,6 +13,10 @@ const num = (value) => {
 const state = { type: 'general', annualProfit: 0, years: 3, losses: 0, contribution: 0 };
 let touched = false;
 
+// 처음 열면 입력란에 채워 둔 예시 값을 그대로 계산해 비교표를 비워 두지 않는다
+const initialProfit = num($('in-profit')?.value);
+if (initialProfit > 0) state.annualProfit = initialProfit;
+
 document.querySelectorAll('.seg button[data-type]').forEach((btn) => {
   btn.addEventListener('click', () => {
     state.type = btn.dataset.type;

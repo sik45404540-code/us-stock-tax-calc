@@ -25,7 +25,7 @@
 <meta name="twitter:image" content="https://taxmoa.com/assets/og-cover.png" />
 <link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png" />
-<link rel="stylesheet" href="assets/style.css?v=7" />
+<link rel="stylesheet" href="assets/style.css?v=8" />
 
 <script type="application/ld+json">
 {
@@ -163,11 +163,38 @@
           </label>
           <label class="field field-wide">
             <span class="field-label">필요경비 <em>수수료·환전 비용 등(선택)</em></span>
-            <span class="money"><input type="text" id="in-expenses" inputmode="numeric" autocomplete="off" placeholder="0" /><span class="unit">원</span></span>
+            <span class="money"><input type="text" id="in-expenses" inputmode="numeric" autocomplete="off" placeholder="0" aria-describedby="hint-expenses" /><span class="unit">원</span></span>
           </label>
         </div>
         <p class="hint" id="hint-profit">평가손실(아직 안 판 손실)은 넣지 마세요. <a href="#tab-plan" data-goto="plan">절세 역산</a>에서 따로 계산합니다.</p>
+        <p class="hint" id="hint-expenses">증권사 <b>실현손익에는 수수료가 이미 빠져 있는 경우가 많으니</b> 중복 입력에 주의하세요. 수수료가 반영된 숫자를 그대로 옮겼다면 필요경비는 비워 두는 편이 안전합니다.</p>
       </div>
+
+      <details class="ria-box" id="ria-box">
+        <summary class="ria-sum">
+          <span class="ria-ico" aria-hidden="true">↩</span>
+          <span class="ria-label">RIA(국내시장 복귀계좌) 과세특례</span>
+          <span class="ria-chip-note" id="ria-summary">해당 없음</span>
+          <span class="ch-arrow" aria-hidden="true"></span>
+        </summary>
+        <div class="ria-body">
+          <p class="ria-lead">2025. 12. 23. 이전에 보유한 해외주식을 <b>RIA 계좌</b>로 매도해 그 대금을 1년간 국내시장에 투자하면, 매도 시점에 따라 양도소득세를 공제받습니다. <em>(2026. 3. 31. 국회 본회의 통과 '환율안정 3법' · 조세특례제한법 제91조의26)</em></p>
+          <label class="field field-wide">
+            <span class="field-label">RIA로 매도한 해외주식의 양도소득금액<em>해당 없으면 비워 두세요</em></span>
+            <span class="money"><input type="text" id="in-ria-gain" inputmode="numeric" autocomplete="off" placeholder="0" /><span class="unit">원</span></span>
+          </label>
+          <div class="ria-chips" role="group" aria-label="RIA 매도 시점">
+            <button type="button" class="ria-chip is-on" data-ria="none" aria-pressed="true">적용 안 함</button>
+            <button type="button" class="ria-chip" data-ria="may" aria-pressed="false">5.31.까지 100%</button>
+            <button type="button" class="ria-chip" data-ria="jul" aria-pressed="false">7.31.까지 80%</button>
+            <button type="button" class="ria-chip" data-ria="dec" aria-pressed="false">12.31.까지 50%</button>
+          </div>
+          <dl class="kv">
+            <div class="kv-row"><dt>RIA 공제액<em id="ria-rate-note">공제율 0%</em></dt><dd id="out-ria" class="good">0원</dd></div>
+          </dl>
+          <p class="hint">공제액은 그해 양도소득금액을 넘지 않습니다. 계좌 <b>납입한도는 5,000만 원</b>(모든 금융회사 합계)이고, 납입일부터 <b>1년 안에 인출하면 공제받은 세액을 추징</b>하며 이자상당가산액이 붙습니다.</p>
+        </div>
+      </details>
 
       <div class="card result" aria-live="polite">
         <p class="result-label">예상 납부 세액</p>
@@ -180,6 +207,7 @@
           <div class="kv-row strong"><dt>과세표준</dt><dd id="out-base">0원</dd></div>
           <div class="kv-row"><dt>양도소득세 20%</dt><dd id="out-income">0원</dd></div>
           <div class="kv-row"><dt>지방소득세 10%<em>산출세액의 10%</em></dt><dd id="out-local">0원</dd></div>
+          <div class="kv-row" id="out-ria-row" hidden><dt>RIA 공제<em>양도소득금액에서 차감</em></dt><dd id="out-ria-vat">0원</dd></div>
         </dl>
 
         <div class="zero-box" id="zero-box" hidden>
@@ -200,6 +228,12 @@
           <div class="meter-fill" id="meter-fill"></div>
         </div>
         <p class="meter-cap"><span>공제 사용 <b id="out-used">0%</b></span><span>250만 원</span></p>
+      </div>
+
+      <div class="notice" id="ria-notice">
+        <p class="notice-title">↩ RIA(국내시장 복귀계좌)를 쓰면 양도세를 돌려받습니다</p>
+        <p><b>2025년 12월 23일 이전</b>에 보유하던 해외주식을 RIA 계좌를 통해 <b>2026년 12월 31일까지</b> 팔고, 그 대금을 <b>1년 이상 국내시장에 투자</b>하면 양도소득금액의 일부를 공제받습니다(조세특례제한법 제91조의26). 공제율은 <b>5월 31일까지 매도 100% · 6~7월 매도 80% · 8~12월 매도 50%</b>입니다.</p>
+        <p>계좌 <b>납입한도는 5,000만 원</b>(모든 금융회사 합계)이고, 운용 대상은 국내 상장주식·국내주식형 펀드·예탁금입니다. 납입일부터 <b>1년 안에 인출하면 공제받은 세액을 추징</b>하고 이자상당가산액이 붙습니다. 별도로 <b>환헤지 파생상품 매입액의 5%(최대 500만 원)</b>를 양도소득금액에서 공제하는 특례도 함께 신설됐습니다(이 계산기에는 반영하지 않았습니다).</p>
       </div>
     </section>
 
@@ -245,7 +279,7 @@
 
       <div class="notice">
         <p class="notice-title">⚠️ 12월 매도는 결제일로 해가 갈립니다</p>
-        <p>미국 주식은 <b>T+1 결제</b>입니다. 2026년 12월 30일(수) 미국 체결분은 12월 31일(목) 결제로 2026년 귀속이지만, 증권사가 국내 결제를 하루 더 잡는 경우가 많아 <b>12월 29일(화)까지</b> 매도하는 것이 안전합니다. 12월 31일(목) 매도분은 2027년 1월 4일 결제 → <b>2027년 귀속</b>입니다.</p>
+        <p>미국 주식은 <b>T+1 결제</b>입니다. 2026년 12월 29일(화) 매도분은 12월 30일(수) 결제로 2026년 귀속이 확실합니다. 12월 30일(수) 미국 체결분은 12월 31일(목) 미국 결제이지만 <b>12월 31일이 한국거래소 연말 휴장일</b>이라 국내 결제가 2027년으로 넘어갈 위험이 커 <b>2027년 귀속 가능성이 높고 비권장</b>입니다. 12월 31일(목) 매도분은 2027년 1월 4일 결제 → <b>2027년 귀속</b>입니다.</p>
       </div>
     </section>
 
@@ -446,11 +480,11 @@
       <tbody>
         <tr><td>12월 24일(목, 조기 폐장)</td><td>12월 28일(월)</td><td>2026년</td></tr>
         <tr><td>12월 29일(화)</td><td>12월 30일(수)</td><td>2026년 <b>안전선</b></td></tr>
-        <tr><td>12월 30일(수)</td><td>12월 31일(목)</td><td>2026년 <em>(증권사 확인)</em></td></tr>
+        <tr><td>12월 30일(수)</td><td>12월 31일(목)</td><td><b>2027년 귀속 가능성 높음 · 비권장</b></td></tr>
         <tr><td>12월 31일(목)</td><td>2027년 1월 4일(월)</td><td>2027년</td></tr>
       </tbody>
     </table>
-    <p>12월 25일은 휴장, 12월 24일은 오후 1시(미 동부) 조기 폐장입니다. 증권사마다 국내 결제 처리 시각이 달라 연말 공지에서 <b>시장별 최종 매매일</b>을 확인하고, 하루 이틀 여유를 두는 편이 안전합니다.</p>
+    <p>12월 25일은 휴장, 12월 24일은 오후 1시(미 동부) 조기 폐장입니다. 특히 <b>12월 31일(목)은 한국거래소 연말 휴장일</b>이라 국내 결제가 2027년 1월로 넘어갈 위험이 큽니다. 12월 30일(수) 미국 체결분은 미국에서는 12월 31일 결제되지만, 증권사의 국내 결제 처리까지 끝내지 못하면 2027년 귀속이 될 수 있어 <b>비권장</b>입니다. 증권사 연말 공지에서 <b>시장별 최종 매매일</b>을 확인하고, 하루 이틀 여유를 두는 편이 안전합니다.</p>
 
     <h3>5. 환율도 세금에 들어갑니다</h3>
     <p>국세청은 <b>양도가액은 매도대금이 입금되는 날</b>, <b>취득가액과 필요경비는 결제대금이 출금되는 날</b>의 기준환율(또는 재정환율)로 원화 환산하도록 안내합니다. 달러로는 본전이어도 살 때 환율이 낮고 팔 때 환율이 높으면 원화 이익이 생깁니다. 반대로 환율이 내리면 원화 손실이 됩니다. 이 계산기는 증권사가 알려주는 <b>원화 실현손익</b>을 그대로 넣도록 만든 이유입니다.</p>
@@ -460,6 +494,7 @@
       <li>증권사 앱에서 <b>올해 해외주식 실현손익(원화)</b>을 확인하고 ‘세액 계산’ 탭에 입력합니다. 증권사에서 CSV로 내려받았다면 <a href="#tab-csv" data-goto="csv">CSV 불러오기</a>에 올려 자동으로 채울 수 있습니다.</li>
       <li>예상 세액이 0원이 아니면, ‘절세 역산’ 탭에 <b>평가손실 종목</b>을 넣어 필요한 매도 주수를 확인합니다.</li>
       <li>증권사의 <b>연말 최종 매매일 공지</b>를 확인합니다(2026년은 12월 29일이 안전선).</li>
+      <li>2025년 12월 23일 이전부터 보유한 해외주식이 있다면 <b>RIA(국내시장 복귀계좌)</b> 공제를 검토합니다. 5월 31일까지 매도하면 양도소득금액의 100%, 7월 말 80%, 연말 50%를 공제받습니다.</li>
       <li>매도 후에는 <b>체결이 아니라 결제</b>가 올해 안에 끝났는지 증권사 잔고·결제 내역으로 확인합니다.</li>
       <li>다음 해 5월 1~31일에 홈택스에서 확정신고합니다. 증권사의 <b>「해외주식 양도소득금액 계산보조자료」</b>를 제출하면 계산명세서와 필요경비 증빙을 생략할 수 있습니다.</li>
     </ol>
@@ -500,6 +535,10 @@
     <details>
       <summary>배당금도 양도소득세로 합산되나요?</summary>
       <p>아니요. 배당은 배당소득으로 15.4%가 적용되고, 금융소득이 연 2,000만 원을 넘으면 종합과세됩니다. 양도세 250만 원 공제와는 별개입니다.</p>
+    </details>
+    <details>
+      <summary>RIA(국내시장 복귀계좌)를 쓰면 양도세가 줄어드나요?</summary>
+      <p>2025년 12월 23일 이전에 보유하던 해외주식을 RIA 계좌로 <b>2026년 12월 31일까지</b> 팔고 그 대금을 1년간 국내시장에 투자하면, 양도소득금액의 일부를 공제받습니다. 매도 시점에 따라 <b>5월 31일까지 100% · 7월 31일까지 80% · 12월 31일까지 50%</b>입니다. 납입한도는 5,000만 원(금융회사 합계)이고 1년 안에 인출하면 공제받은 세액을 추징합니다. 위 계산기의 <b>RIA 과세특례</b> 칸에 금액과 매도 시점을 넣으면 반영됩니다.</p>
     </details>
     <details>
       <summary>국내주식 손실과도 통산할 수 있나요?</summary>
@@ -551,6 +590,6 @@
   </div>
 </footer>
 
-<script type="module" src="assets/app.js?v=6"></script>
+<script type="module" src="assets/app.js?v=7"></script>
 </body>
 </html>

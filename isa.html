@@ -24,7 +24,7 @@
 <meta name="twitter:image" content="https://taxmoa.com/assets/og-cover.png" />
 <link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png" />
-<link rel="stylesheet" href="assets/style.css?v=7" />
+<link rel="stylesheet" href="assets/style.css?v=8" />
 
 <script type="application/ld+json">
 {
@@ -131,8 +131,8 @@
       <p class="card-sub">계좌 안에서 낼 것으로 보는 <b>연간 과세대상 수익</b>을 넣으세요. 국내 상장주식 매매차익은 원래 비과세라 넣지 않습니다.</p>
       <div class="fields">
         <label class="field field-wide">
-          <span class="field-label">연 수익<em>배당 + 매매차익 (세전)</em></span>
-          <span class="money"><input type="text" id="in-profit" inputmode="numeric" autocomplete="off" placeholder="0" /><span class="unit">원</span></span>
+          <span class="field-label">연 수익<em>배당 + 매매차익 (세전) · 예시 500만 원</em></span>
+          <span class="money"><input type="text" id="in-profit" inputmode="numeric" autocomplete="off" placeholder="0" value="5,000,000" /><span class="unit">원</span></span>
         </label>
         <label class="field">
           <span class="field-label">운용 기간<em>의무 3년</em></span>
@@ -147,7 +147,7 @@
           <span class="money"><input type="text" id="in-losses" inputmode="numeric" autocomplete="off" placeholder="0" /><span class="unit">원</span></span>
         </label>
       </div>
-      <p class="hint">수익은 단순 누적(연 수익 × 기간)으로 계산합니다. 실제로는 매년 복리로 불어나므로 수익이 재투자되면 차이가 조금 커집니다.</p>
+      <p class="hint"><b>처음 열면 예시(연 수익 500만 원 × 3년)가 채워져 있습니다.</b> 내 수익으로 바꾸면 아래 비교표가 바로 다시 계산됩니다. 수익은 단순 누적(연 수익 × 기간)으로 계산하며, 실제로는 매년 복리로 불어나 수익이 재투자되면 차이가 조금 커집니다.</p>
     </div>
 
     <div class="card result" aria-live="polite">
@@ -310,6 +310,6 @@
   </div>
 </footer>
 
-<script type="module" src="assets/isa.js?v=4"></script>
+<script type="module" src="assets/isa.js?v=5"></script>
 </body>
 </html>

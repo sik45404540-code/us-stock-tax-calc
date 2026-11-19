@@ -31,7 +31,7 @@ const blankPosition = () => ({ name: '', avg: '', price: '', qty: '', fx: '' });
 const blankLedger = () => ({ name: '', mode: 'pnl', pnl: '', avg: '', sell: '', qty: '', fx: '', fee: '' });
 
 let state = {
-  inputs: { profit: 0, loss: 0, expenses: 0 },
+  inputs: { profit: 0, loss: 0, expenses: 0, riaGain: 0, riaPeriod: 'none' },
   positions: [blankPosition()],
   ledger: [],
 };
@@ -137,15 +137,58 @@ bindMoney($('in-loss'), (v) => setInput('loss', v));
 bindMoney($('in-expenses'), (v) => setInput('expenses', v));
 bindMoney($('plan-profit'), (v) => setInput('profit', v));
 bindMoney($('plan-loss'), (v) => setInput('loss', v));
+bindMoney($('in-ria-gain'), (v) => setInput('riaGain', v));
+
+/* RIA 매도 시점 칩 */
+const riaChips = Array.from(document.querySelectorAll('.ria-chip[data-ria]'));
+function syncRiaChips(period) {
+  riaChips.forEach((chip) => {
+    const on = chip.dataset.ria === period;
+    chip.classList.toggle('is-on', on);
+    chip.setAttribute('aria-pressed', String(on));
+  });
+}
+riaChips.forEach((chip) => {
+  chip.addEventListener('click', () => {
+    syncRiaChips(chip.dataset.ria);
+    setInput('riaPeriod', chip.dataset.ria);
+  });
+});
 
 /* ── ① 세액 계산 렌더 ───────────────────────────────── */
-function renderResults() {
-  const snapshot = {
+function snapshotInputs() {
+  return {
     profit: state.inputs.profit || 0,
     loss: state.inputs.loss || 0,
     expenses: state.inputs.expenses || 0,
+    riaGain: state.inputs.riaGain || 0,
+    riaPeriod: state.inputs.riaPeriod || 'none',
   };
+}
+
+function renderRia(r) {
+  const row = $('out-ria-row');
+  const out = $('out-ria');
+  const summary = $('ria-summary');
+  const rateNote = $('ria-rate-note');
+  const percent = Math.round((r.riaRate || 0) * 100);
+
+  if (rateNote) rateNote.textContent = `공제율 ${percent}%`;
+  if (out) out.textContent = won(r.riaDeduction);
+  if (row) row.hidden = r.riaDeduction <= 0;
+  const vat = $('out-ria-vat');
+  if (vat) vat.textContent = `-${won(r.riaDeduction)}`;
+  if (summary) {
+    summary.textContent = r.riaDeduction > 0
+      ? `${fmt(r.riaDeduction)}원 공제`
+      : '해당 없음';
+  }
+}
+
+function renderResults() {
+  const snapshot = snapshotInputs();
   const r = calcTax(snapshot);
+  renderRia(r);
 
   $('out-total').textContent = fmt(r.totalTax);
   $('out-net').textContent = won(r.netGain);
@@ -158,7 +201,7 @@ function renderResults() {
     ? '이 금액만큼 더 이익을 실현해도 세금은 0원입니다.'
     : '기본공제 250만 원을 모두 사용했습니다. 초과분부터 22%가 붙습니다.';
 
-  const usedPct = Math.min(100, Math.round((Math.max(0, r.netGain) / DEDUCTION) * 100));
+  const usedPct = Math.min(100, Math.round((Math.max(0, r.gainAfterRia) / DEDUCTION) * 100));
   $('meter-fill').style.width = `${usedPct}%`;
   $('out-used').textContent = `${usedPct}%`;
 
@@ -167,12 +210,17 @@ function renderResults() {
   const zeroTitle = $('zero-title');
   const zeroBody = $('zero-body');
 
-  if (!snapshot.profit && !snapshot.loss && !snapshot.expenses) {
+  if (!snapshot.profit && !snapshot.loss && !snapshot.expenses && !snapshot.riaGain) {
     note.textContent = '금액을 입력하면 바로 계산됩니다.';
     zeroBox.hidden = true;
   } else if (r.totalTax > 0) {
     note.innerHTML = `과세표준 <b>${won(r.taxableBase)}</b>에 22%(소득세 20% + 지방세 2%)를 적용한 금액입니다.`;
     zeroBox.hidden = true;
+  } else if (r.riaDeduction > 0) {
+    note.innerHTML = `RIA 공제 <b>${won(r.riaDeduction)}</b>을 반영해 <b>납부 세액 0원</b>입니다.`;
+    zeroBox.hidden = false;
+    zeroTitle.textContent = 'RIA 공제로 납부 세액 0원';
+    zeroBody.textContent = `양도소득금액 ${won(r.netGain)}에서 RIA 공제 ${won(r.riaDeduction)}을 뺀 ${won(r.gainAfterRia)}이 기본공제 250만 원을 넘지 않아 세금이 없습니다. 공제 여력은 ${won(r.deductionLeft)} 남아 있습니다.`;
   } else {
     note.innerHTML = '기본공제 이내로 <b>납부 세액 0원</b>입니다.';
     zeroBox.hidden = false;
@@ -275,12 +323,7 @@ $('add-pos').addEventListener('click', () => {
 });
 
 function renderPlan() {
-  const snapshot = {
-    profit: state.inputs.profit || 0,
-    loss: state.inputs.loss || 0,
-    expenses: state.inputs.expenses || 0,
-  };
-  const res = harvestPlan(snapshot, state.positions);
+  const res = harvestPlan(snapshotInputs(), state.positions);
   const need = $('out-need');
   const note = $('need-note');
   const table = $('plan-table');
@@ -541,11 +584,19 @@ window.addEventListener('resize', syncTopbarHeight);
 
 /* ── 시작 ──────────────────────────────────────────── */
 function hydrateInputs() {
-  const map = { 'in-profit': 'profit', 'in-loss': 'loss', 'in-expenses': 'expenses', 'plan-profit': 'profit', 'plan-loss': 'loss' };
+  const map = {
+    'in-profit': 'profit',
+    'in-loss': 'loss',
+    'in-expenses': 'expenses',
+    'plan-profit': 'profit',
+    'plan-loss': 'loss',
+    'in-ria-gain': 'riaGain',
+  };
   Object.entries(map).forEach(([id, key]) => {
     const el = $(id);
     if (el) el.value = state.inputs[key] ? fmt(state.inputs[key]) : '';
   });
+  syncRiaChips(state.inputs.riaPeriod || 'none');
 }
 
 loadState();

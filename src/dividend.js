@@ -2,24 +2,33 @@
  * 배당소득세 · 금융소득 종합과세 계산 코어 (2026년 귀속 기준)
  *
  * 근거
- *  - 소득세법 제14조③6호(종합과세기준금액 2,000만 원), 제17조(배당소득), 제55조(기본세율),
- *    제57조(외국납부세액공제), 제62조(금융소득 산출세액 계산), 제127조·제129조(원천징수)
+ *  - 소득세법 제14조③6호(종합과세기준금액 2,000만 원), 제17조(배당소득·배당가산),
+ *    제55조(기본세율), 제56조(배당세액공제), 제57조(외국납부세액공제),
+ *    제62조(금융소득 산출세액 계산), 제127조·제129조(원천징수)
  *  - 지방세법 제103조의3(개인지방소득세 10%)·제103조의13(원천징수)
  *  - 한미 조세조약 제12조(배당 제한세율 15%), 국세청 「금융소득 종합과세 해설」
  *
  * 계산 방식
- *  1) 금융소득 = 국내 배당 + 미국 배당 + 국내 이자
+ *  1) 금융소득 = 국내 배당 + 미국 배당 + 국내 이자 (모두 세전, 배당가산 전 금액)
+ *     · 2,000만 원 종합과세 판정에는 배당가산액을 넣지 않는다(제14조④).
  *  2) 2,000만 원 이하: 원천징수로 종결(분리과세와 같은 결과)
  *     · 국내 배당·이자 15.4%(소득세 14% + 지방소득세 1.4%)
  *     · 미국 배당은 현지 15% 원천징수. 국내 세율(14%)보다 높아 국내 추가 징수 없음
  *  3) 2,000만 원 초과: 국세청 비교과세 방식으로 산출세액을 정한다.
- *     ① 2,000만×14% + (2,000만 초과 금융소득 + 다른 종합소득금액 − 소득공제) × 기본세율
+ *     ① 2,000만×14% + (2,000만 초과분 + 배당가산액 + 다른 종합소득금액 − 소득공제) × 기본세율
  *     ② 금융소득×14% + (다른 종합소득금액 − 소득공제) × 기본세율
- *     → 산출세액 = max(①, ②), 여기에 지방소득세 10%, 외국납부세액공제, 기납부세액 반영
+ *     → 산출세액 = max(①, ②)
+ *  4) 배당가산(Gross-up)과 배당세액공제 — 2024.1.1. 이후 지급분 10%, 2027년 지급분부터 11%
+ *     · 가산 대상은 내국법인이 준 배당(국내 상장·비상장 법인 주식)뿐이다.
+ *       해외주식 배당, 국내 상장 ETF·리츠·펀드 분배금은 가산 대상이 아니다(제17조③, 시행령 제27조의3).
+ *     · 가산 대상 금액 = 2,000만 원 초과분에 실제로 들어간 국내 배당
+ *       (2,000만 원은 이자 → 가산 제외 배당 → 가산 대상 배당 순서로 채운다)
+ *     · 배당세액공제 = min(배당가산액, ① − ②) → 산출세액에서 뺀다(제56조)
+ *  5) 여기에 지방소득세 10%, 외국납부세액공제, 기납부세액(원천징수)을 반영한다.
  *
  * 단순화한 부분(화면에서도 안내한다)
- *  - 국내 배당의 배당가산(gross-up)과 배당세액공제는 반영하지 않는다(국내 배당이 많을 때 실제보다 조금 높게 나온다).
  *  - 이자·배당 외 금융소득(비영업대금 이익 25% 등)과 분리과세·비과세 상품은 다루지 않는다.
+ *  - 고배당기업 배당소득 분리과세 특례(조특법 제104조의27)는 종목별 요건 확인이 필요해 제외한다.
  */
 
 const EPS = 1e-7;
@@ -51,6 +60,9 @@ export const US_WITHHOLD_RATE = 0.15;
 export const DEPENDENT_LIMIT = 20_000_000;
 /** 피부양자 판정에서 금융소득을 0원으로 보는 기준(1,000만 원). 넘으면 전액 합산 */
 export const DEPENDENT_FINANCIAL_FLOOR = 10_000_000;
+/** 배당가산율: 2024.1.1. 이후 지급분 10%, 2027.1.1. 이후 지급분 11% (제17조③) */
+export const GROSS_UP_RATE = 0.1;
+export const GROSS_UP_RATE_FROM_2027 = 0.11;
 
 /** 2026년 귀속 종합소득세 기본세율(소득세법 제55조) */
 export const INCOME_BRACKETS = [
@@ -84,27 +96,40 @@ export function basicIncomeTax(base) {
 /**
  * 배당·이자 소득 입력값 → 세금 계산
  * @param {object} input
- * @param {number} input.domestic     국내 배당(세전)
- * @param {number} input.us           미국 배당(세전, 원화 환산)
- * @param {number} input.interest     국내 이자(예금·채권, 세전)
- * @param {number} input.otherIncome  다른 종합소득금액(근로소득금액·사업소득금액 등)
- * @param {number} input.deductions   종합소득공제 합계(모르면 0)
+ * @param {number} input.domestic          국내 배당 — 내국법인 주식 배당(배당가산 대상, 세전)
+ * @param {number} [input.domesticExcluded] 국내 배당 중 ETF·리츠·펀드 분배금(배당가산 제외)
+ * @param {number} input.us                미국 배당(세전, 원화 환산 · 배당가산 제외)
+ * @param {number} input.interest          국내 이자(예금·채권, 세전)
+ * @param {number} input.otherIncome       다른 종합소득금액(근로소득금액·사업소득금액 등)
+ * @param {number} input.deductions        종합소득공제 합계(모르면 0)
+ * @param {number} [input.grossUpRate]     배당가산율(기본 10%)
  */
 export function calcDividend(input = {}) {
   const domestic = Math.max(0, toNumber(input.domestic));
+  const domesticExcluded = Math.max(0, toNumber(input.domesticExcluded));
   const us = Math.max(0, toNumber(input.us));
   const interest = Math.max(0, toNumber(input.interest));
   const otherIncome = Math.max(0, toNumber(input.otherIncome));
   const deductions = Math.max(0, toNumber(input.deductions));
+  const grossUpRate = input.grossUpRate === undefined ? GROSS_UP_RATE : Math.max(0, toNumber(input.grossUpRate));
 
-  const financial = domestic + us + interest;
+  const financial = domestic + domesticExcluded + us + interest;
   const exceeded = financial > FINANCIAL_THRESHOLD + EPS;
   const excess = exceeded ? floorWon(financial - FINANCIAL_THRESHOLD) : 0;
   const thresholdLeft = Math.max(0, FINANCIAL_THRESHOLD - financial);
 
-  const domesticBase = domestic + interest;
+  const domesticBase = domestic + domesticExcluded + interest; // 국내 원천징수 대상
   const domesticTax = floorWon(domesticBase * WITHHOLD_RATE); // 원천징수로 종결되는 부분
   const usTax = floorWon(us * US_WITHHOLD_RATE); // 미국 현지 원천징수
+
+  // 배당가산: 2,000만 원 초과분에 들어간 '가산 대상 배당'에만 붙는다.
+  // 초과분은 이자 → 가산 제외 배당(미국·ETF·리츠·펀드) → 가산 대상 배당 순서로 채운다.
+  const interestInExcess = Math.min(interest, excess);
+  const excludedInExcess = Math.min(domesticExcluded + us, Math.max(0, excess - interestInExcess));
+  const grossUpBase = exceeded
+    ? Math.min(domestic, Math.max(0, excess - interestInExcess - excludedInExcess))
+    : 0;
+  const grossUp = floorWon(grossUpBase * grossUpRate);
 
   // 2,000만 원 이하: 미국 배당에 대한 국내 추가 징수(현지 세율이 14%보다 낮을 때만 발생)
   let usTopUp = 0;
@@ -119,6 +144,7 @@ export function calcDividend(input = {}) {
 
   const base = {
     domestic,
+    domesticExcluded,
     us,
     interest,
     otherIncome,
@@ -128,6 +154,9 @@ export function calcDividend(input = {}) {
     exceeded,
     excess,
     thresholdLeft,
+    grossUpBase,
+    grossUp,
+    grossUpRate,
     domesticTax,
     usTax,
     usTopUp,
@@ -139,7 +168,7 @@ export function calcDividend(input = {}) {
     },
   };
 
-  // ── 2,000만 원 이하: 원천징수로 종결 ──────────────────────────────
+  // ── 2,000만 원 이하: 원천징수로 종결 (배당가산·배당세액공제 없음) ────────────
   if (!exceeded) {
     const koreanTax = domesticTax + usTopUp;
     const totalTax = koreanTax + usTax;
@@ -150,6 +179,7 @@ export function calcDividend(input = {}) {
       methodB: 0,
       methodApplied: 'separate',
       nationalTax: 0,
+      dividendCredit: 0,
       foreignCredit: 0,
       foreignCreditLimit: 0,
       localTax: 0,
@@ -163,20 +193,24 @@ export function calcDividend(input = {}) {
       totalTax,
       netReceipt: Math.max(0, financial - totalTax),
       effectiveRate: financial > 0 ? totalTax / financial : 0,
-      holdingRate: financial > 0 ? (1 - totalTax / financial) : 1,
+      holdingRate: financial > 0 ? 1 - totalTax / financial : 1,
     };
   }
 
-  // ── 2,000만 원 초과: 비교과세 ─────────────────────────────────────
-  const combinedBase = Math.max(0, excess + otherIncome - deductions);
+  // ── 2,000만 원 초과: 비교과세 + 배당가산·배당세액공제 ──────────────────────
+  const combinedBase = Math.max(0, excess + grossUp + otherIncome - deductions);
   const otherBase = Math.max(0, otherIncome - deductions);
 
   const methodA = floorWon(FINANCIAL_THRESHOLD * INCOME_TAX_RATE) + basicIncomeTax(combinedBase);
   const methodB = floorWon(financial * INCOME_TAX_RATE) + basicIncomeTax(otherBase);
   const methodApplied = methodA >= methodB ? 'combined' : 'flat';
-  const nationalTax = Math.max(methodA, methodB);
+  const computedTax = Math.max(methodA, methodB);
 
-  const totalIncome = financial + otherIncome;
+  // 배당세액공제 = min(배당가산액, ① − ②). ②가 크면 공제 없음(①−②가 음수).
+  const dividendCredit = methodA > methodB ? Math.min(grossUp, methodA - methodB) : 0;
+  const nationalTax = Math.max(0, computedTax - dividendCredit);
+
+  const totalIncome = financial + grossUp + otherIncome;
   const foreignCreditLimit = totalIncome > 0 ? floorWon(nationalTax * (us / totalIncome)) : 0;
   const foreignCredit = Math.min(usTax, foreignCreditLimit);
   const nationalLeft = Math.max(0, nationalTax - foreignCredit);
@@ -193,7 +227,9 @@ export function calcDividend(input = {}) {
     methodA,
     methodB,
     methodApplied,
+    computedTax,
     nationalTax,
+    dividendCredit,
     foreignCredit,
     foreignCreditLimit,
     localTax,
@@ -207,7 +243,7 @@ export function calcDividend(input = {}) {
     totalTax,
     netReceipt: Math.max(0, financial - totalTax),
     effectiveRate: financial > 0 ? totalTax / financial : 0,
-    holdingRate: financial > 0 ? (1 - totalTax / financial) : 1,
+    holdingRate: financial > 0 ? 1 - totalTax / financial : 1,
   };
 }
 
@@ -219,5 +255,7 @@ export const CONFIG = {
   US_WITHHOLD_RATE,
   DEPENDENT_LIMIT,
   DEPENDENT_FINANCIAL_FLOOR,
+  GROSS_UP_RATE,
+  GROSS_UP_RATE_FROM_2027,
   YEAR: 2026,
 };

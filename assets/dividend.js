@@ -12,13 +12,21 @@ const num = (value) => {
 
 const inputs = {
   domestic: $('in-domestic'),
+  domesticExcluded: $('in-domestic-excluded'),
   us: $('in-us'),
   interest: $('in-interest'),
   otherIncome: $('in-other'),
   deductions: $('in-deductions'),
 };
 
-const state = { domestic: 0, us: 0, interest: 0, otherIncome: 0, deductions: 0 };
+const state = {
+  domestic: 0,
+  domesticExcluded: 0,
+  us: 0,
+  interest: 0,
+  otherIncome: 0,
+  deductions: 0,
+};
 let touched = false;
 
 function bindMoney(el, key) {
@@ -62,13 +70,18 @@ function renderFlags(r) {
     if (r.us > 0) {
       items.push(flag('info', 'i', '미국 배당은 현지에서 15%가 먼저 빠집니다. 국내 세율(14%)보다 높아 국내에서 더 떼지 않으며, 넘게 낸 1%p는 환급되지 않습니다.'));
     }
+    if (r.grossUp > 0) {
+      items.push(flag('ok', '✓', `내국법인 배당 중 2,000만 원 초과분에 들어간 <b>${won(r.grossUpBase)}</b>에 배당가산 10%를 붙여 소득에 더하고, 같은 금액을 한도로 배당세액공제 <b>${won(r.dividendCredit)}</b>을 세액에서 뺐습니다.`));
+    } else if (r.exceeded && r.domestic > 0) {
+      items.push(flag('info', 'i', '이번에는 국내 배당이 2,000만 원 초과분에 들어가지 않아 배당가산(Gross-up)이 0원입니다. 이자·가산 제외 배당이 먼저 기준금액을 채우기 때문입니다.'));
+    }
   }
   box.innerHTML = items.join('');
 }
 
 function render() {
   const r = calcDividend(state);
-  const hasAny = state.domestic + state.us + state.interest + state.otherIncome > 0;
+  const hasAny = state.domestic + state.domesticExcluded + state.us + state.interest + state.otherIncome > 0;
 
   $('out-total').textContent = fmt(r.totalTax);
   $('out-fin').textContent = won(r.financial);
@@ -98,7 +111,7 @@ function render() {
   if (!hasAny) {
     note.textContent = '금액을 입력하면 바로 계산됩니다.';
   } else if (r.mode === 'combined') {
-    note.innerHTML = `금융소득이 2,000만 원을 넘어 <b>종합과세</b>로 계산했습니다. 국내에서 낼 세금은 ${won(r.koreanTax)}(국세 ${won(r.nationalTax - r.foreignCredit)} + 지방세 ${won(r.localTax)})이고, 원천징수된 ${won(r.prepaid)}을 빼면 <b>${r.refund > 0 ? '환급' : '추가 납부'} ${won(r.refund || r.additional)}</b>입니다.`;
+    note.innerHTML = `금융소득이 2,000만 원을 넘어 <b>종합과세</b>로 계산했습니다. 배당가산 ${won(r.grossUp)}과 배당세액공제 ${won(r.dividendCredit)}을 반영한 국내 세금은 ${won(r.koreanTax)}(국세 ${won(r.nationalTax - r.foreignCredit)} + 지방세 ${won(r.localTax)})이고, 원천징수된 ${won(r.prepaid)}을 빼면 <b>${r.refund > 0 ? '환급' : '추가 납부'} ${won(r.refund || r.additional)}</b>입니다.`;
   } else {
     note.innerHTML = `2,000만 원 이하라 <b>원천징수로 종결</b>됩니다. 국내 배당·이자에 15.4%, 미국 배당에 현지 15%가 전부입니다.`;
   }
@@ -124,13 +137,15 @@ function render() {
   if (r.mode === 'combined') {
     $('cmp-a').textContent = won(r.methodA);
     $('cmp-b').textContent = won(r.methodB);
+    $('cmp-grossup').textContent = r.grossUp > 0 ? `+${won(r.grossUp)}` : '0원';
+    $('cmp-div-credit').textContent = r.dividendCredit > 0 ? `−${won(r.dividendCredit)}` : '0원';
     $('cmp-local').textContent = won(r.localTax);
     $('cmp-credit').textContent = r.us > 0 ? `-${won(r.foreignCredit)}` : '0원';
     $('cmp-national').textContent = won(r.koreanTax);
     $('cmp-pick').textContent = r.methodApplied === 'combined' ? '① 합산과세 적용' : '② 비교과세 적용';
     $('cmp-a').className = r.methodApplied === 'combined' ? 'win' : '';
     $('cmp-b').className = r.methodApplied === 'flat' ? 'win' : '';
-    $('cmp-note').innerHTML = `①은 2,000만 원×14% + (초과분 ${won(r.excess)} + 다른 소득 ${won(r.otherIncome)} − 공제 ${won(r.deductions)}) × 기본세율, ②는 금융소득 ${won(r.financial)}×14% + (다른 소득 − 공제) × 기본세율입니다. 이번에는 <b>${r.bracket.label}</b> 구간이 적용됐습니다.`;
+    $('cmp-note').innerHTML = `①은 2,000만 원×14% + (초과분 ${won(r.excess)} + 배당가산 ${won(r.grossUp)} + 다른 소득 ${won(r.otherIncome)} − 공제 ${won(r.deductions)}) × 기본세율, ②는 금융소득 ${won(r.financial)}×14% + (다른 소득 − 공제) × 기본세율입니다. 이번에는 <b>${r.bracket.label}</b> 구간이 적용됐고, 배당세액공제는 min(가산액 ${won(r.grossUp)}, ① − ②) = <b>${won(r.dividendCredit)}</b>입니다.`;
   }
 
   renderFlags(r);

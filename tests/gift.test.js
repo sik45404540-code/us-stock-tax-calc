@@ -280,3 +280,41 @@ test('공제 상수는 2026년 기준값을 유지한다', () => {
   assert.equal(GIFT.capitalGainDeduction, 2_500_000);
   assert.equal(GIFT.capitalGainRate, 0.22);
 });
+
+/* ── 기타친족 범위와 신고세액공제 경계 ─────────────────── */
+
+test('기타친족: 4촌 이내 혈족·3촌 이내 인척, 10년 공제 1,000만 원', () => {
+  assert.equal(RELATIONS.relative.limit, 10_000_000);
+
+  const exact = giftTax({ amount: 10_000_000, relation: 'relative' });
+  assert.equal(exact.taxBase, 0);
+  assert.equal(exact.total, 0);
+
+  // 공제를 1만 원 넘겨도 과세표준 1만 원 → 과세최저한(50만 원)으로 0원
+  const justOver = giftTax({ amount: 10_010_000, relation: 'relative' });
+  assert.equal(justOver.taxBase, 10_000);
+  assert.equal(justOver.belowMinimum, true);
+  assert.equal(justOver.total, 0);
+
+  const taxable = giftTax({ amount: 15_000_000, relation: 'relative' });
+  assert.equal(taxable.taxBase, 5_000_000);
+  assert.equal(taxable.computedTax, 500_000);
+  assert.equal(taxable.reportCredit, 15_000);
+  assert.equal(taxable.total, 485_000);
+});
+
+test('성인 자녀 1억 원 증여는 기본공제만 쓰면 485만 원이 부과된다', () => {
+  const r = giftTax({ amount: 100_000_000, relation: 'parentAdult' });
+  assert.equal(r.deduction, 50_000_000);
+  assert.equal(r.taxBase, 50_000_000);
+  assert.equal(r.computedTax, 5_000_000);
+  assert.equal(r.reportCredit, 150_000);
+  assert.equal(r.total, 4_850_000);
+});
+
+test('혼인·출산 공제를 함께 쓰면 1억 5,000만 원까지 0원이다', () => {
+  const r = giftTax({ amount: 150_000_000, relation: 'parentAdult', marriageBirth: true });
+  assert.equal(r.deduction, 150_000_000);
+  assert.equal(r.taxBase, 0);
+  assert.equal(r.total, 0);
+});

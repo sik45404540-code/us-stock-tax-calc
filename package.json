@@ -5,7 +5,7 @@
   "type": "module",
   "description": "미국주식 양도소득세·손익통산 절세 계산기 (한국 거주자용)",
   "scripts": {
-    "test": "node --test tests/",
+    "test": "node --test tests/*.test.js",
     "serve": "python3 -m http.server 4173"
   }
 }

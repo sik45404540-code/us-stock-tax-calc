@@ -178,3 +178,64 @@ test('D-day 계산은 한국 시간 기준 자정끼리 뺀다', () => {
   assert.equal(daysBetween('2026-11-19', '2026-11-19'), 0);
   assert.equal(daysBetween('bad', '2026-11-19'), null);
 });
+
+/* ── RIA(국내시장 복귀계좌) 과세특례 ─────────────────── */
+
+test('RIA: 5월 31일까지 매도분은 양도소득금액 100%를 공제한다', () => {
+  const r = calcTax({ profit: 30_000_000, riaGain: 10_000_000, riaPeriod: 'may' });
+  assert.equal(r.riaRate, 1);
+  assert.equal(r.riaDeduction, 10_000_000);
+  assert.equal(r.gainAfterRia, 20_000_000);
+  assert.equal(r.taxableBase, 17_500_000);
+  assert.equal(r.totalTax, 3_850_000);
+});
+
+test('RIA: 7월 31일까지는 80%, 12월 31일까지는 50%만 공제한다', () => {
+  const jul = calcTax({ profit: 30_000_000, riaGain: 10_000_000, riaPeriod: 'jul' });
+  assert.equal(jul.riaRate, 0.8);
+  assert.equal(jul.riaDeduction, 8_000_000);
+  assert.equal(jul.taxableBase, 19_500_000);
+  assert.equal(jul.totalTax, 4_290_000);
+
+  const dec = calcTax({ profit: 30_000_000, riaGain: 10_000_000, riaPeriod: 'dec' });
+  assert.equal(dec.riaRate, 0.5);
+  assert.equal(dec.riaDeduction, 5_000_000);
+  assert.equal(dec.totalTax, 4_950_000);
+});
+
+test('RIA: 공제액은 그해 양도소득금액을 넘지 않는다', () => {
+  const r = calcTax({ profit: 10_000_000, riaGain: 50_000_000, riaPeriod: 'may' });
+  assert.equal(r.riaDeduction, 10_000_000);
+  assert.equal(r.gainAfterRia, 0);
+  assert.equal(r.taxableBase, 0);
+  assert.equal(r.totalTax, 0);
+  assert.equal(r.deductionLeft, 2_500_000); // 공제 후 소득이 0원이라 기본공제는 남는다
+});
+
+test('RIA: 적용 안 함(기본값)이면 기존 계산 결과가 그대로다', () => {
+  const base = calcTax({ profit: 12_000_000, loss: 3_000_000 });
+  const withGain = calcTax({ profit: 12_000_000, loss: 3_000_000, riaGain: 5_000_000 });
+  assert.equal(withGain.riaDeduction, 0);
+  assert.equal(withGain.totalTax, base.totalTax);
+  assert.equal(withGain.taxableBase, base.taxableBase);
+});
+
+test('RIA: 손실이 이익보다 크면 공제는 0원이고 세액도 0원이다', () => {
+  const r = calcTax({ profit: 1_000_000, loss: 4_000_000, riaGain: 5_000_000, riaPeriod: 'may' });
+  assert.equal(r.netGain, -3_000_000);
+  assert.equal(r.riaDeduction, 0);
+  assert.equal(r.taxableBase, 0);
+  assert.equal(r.totalTax, 0);
+});
+
+test('RIA 공제는 필요손실 역산에도 반영된다', () => {
+  assert.equal(requiredLossForZero({ profit: 20_000_000 }), 17_500_000);
+  assert.equal(
+    requiredLossForZero({ profit: 20_000_000, riaGain: 10_000_000, riaPeriod: 'may' }),
+    7_500_000,
+  );
+  assert.equal(
+    requiredLossForZero({ profit: 20_000_000, riaGain: 10_000_000, riaPeriod: 'dec' }),
+    12_500_000,
+  );
+});

@@ -97,9 +97,26 @@ with sync_playwright() as p:
     type_money(page, "#in-loss", 3_000_000)
     check("index.세액", text(page, "#out-total"), "1,430,000")
     check("index.과세표준", text(page, "#out-base"), "6,500,000")
+    check("index.필요경비힌트", text(page, "#hint-expenses"), "중복 입력")
     shot(page, "01-index-top")
     scroll_to(page, "#panel-calc .result")
     shot(page, "02-index-result")
+
+    # RIA(국내시장 복귀계좌) 과세특례
+    page.click("#ria-box > summary")
+    page.wait_for_timeout(200)
+    type_money(page, "#in-ria-gain", 20_000_000)
+    page.click(".ria-chip[data-ria='may']")
+    page.wait_for_timeout(200)
+    check("ria.공제액", text(page, "#out-ria"), "9,000,000")
+    check("ria.세액0원", text(page, "#out-total"), "0")
+    check("ria.요약", text(page, "#ria-summary"), "9,000,000원 공제")
+    scroll_to(page, "#ria-box")
+    shot(page, "index-ria")
+    page.click(".ria-chip[data-ria='none']")
+    type_money(page, "#in-ria-gain", 0)
+    page.wait_for_timeout(150)
+    check("ria.해제후세액", text(page, "#out-total"), "1,430,000")
 
     # 절세 역산 탭
     page.click("#tab-plan")
@@ -125,11 +142,23 @@ with sync_playwright() as p:
     check("dividend.분리과세", text(page, "#out-total"), "1,540,000")
     check("dividend.종결안내", text(page, "#out-note"), "원천징수로 종결")
 
+    # 배당 Gross-up 예시: 국내 배당 3,000만 + 근로소득금액 5,000만
+    page.goto(f"{BASE}/dividend", wait_until="networkidle")
+    type_money(page, "#in-domestic", 30_000_000)
+    type_money(page, "#in-other", 50_000_000)
+    check("dividend.가산액", text(page, "#cmp-grossup"), "1,000,000")
+    check("dividend.배당세액공제", text(page, "#cmp-div-credit"), "1,000,000")
+    check("dividend.국내납부", text(page, "#cmp-national"), "11,748,000")
+    check("dividend.추가납부", text(page, "#out-extra"), "7,128,000")
+    scroll_to(page, "#cmp-card")
+    shot(page, "dividend-fixed")
+
     # ── 3. ISA ───────────────────────────────────────
     page.goto(f"{BASE}/isa", wait_until="networkidle")
     check("isa.h1", text(page, "h1"), "ISA 절세 계산기")
-    type_money(page, "#in-profit", 5_000_000)
-    check("isa.일반형절세", text(page, "#out-saving"), "1,023,000")
+    check("isa.예시기본값", val(page, "#in-profit"), "5,000,000")
+    check("isa.예시계산", text(page, "#out-saving"), "1,023,000")
+    check("isa.비교표", text(page, "#cmp-net"), "15,000,000")
     page.click("button[data-type='lowIncome']")
     page.wait_for_timeout(200)
     check("isa.서민형절세", text(page, "#out-saving"), "1,221,000")
@@ -207,6 +236,18 @@ with sync_playwright() as p:
     scroll_to(page, "#pg-spouse .result")
     shot(page, "15-gift-spouse")
     page.click("#tab-gift")
+
+    # 증여세 안내 문구
+    page.goto(f"{BASE}/gift", wait_until="networkidle")
+    guide = text(page, "#guide")
+    check("gift.기타친족현행", guide, "4촌 이내 혈족 · 3촌 이내 인척")
+    check("gift.기타친족종전", guide, "6촌 이내 혈족·4촌 이내 인척")
+    faq_all = page.evaluate("() => document.querySelector('#faq').textContent")
+    check("gift.1억FAQ", faq_all, "485만 원")
+
+    # 양도세 연말 12/30 표기
+    page.goto(f"{BASE}/", wait_until="networkidle")
+    check("index.12월30일", text(page, "#guide"), "2027년 귀속 가능성 높음 · 비권장")
 
     # ── 6. 상단 내비게이션(6개) ───────────────────────
     page.goto(f"{BASE}/gift", wait_until="networkidle")

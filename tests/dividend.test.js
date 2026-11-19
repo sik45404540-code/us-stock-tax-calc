@@ -45,24 +45,33 @@ test('2,000만 원을 넘으면 비교과세 중 큰 금액이 적용된다', ()
   assert.equal(r.mode, 'combined');
   assert.equal(r.exceeded, true);
   assert.equal(r.excess, 1_000_000);
-  assert.equal(r.methodA, 2_860_000); // 280만 + 100만×6%
+  assert.equal(r.grossUpBase, 1_000_000); // 초과분에 들어간 배당만 가산 대상
+  assert.equal(r.grossUp, 100_000);
+  assert.equal(r.methodA, 2_866_000); // 280만 + basicTax(1,100만)=66만
   assert.equal(r.methodB, 2_940_000); // 2,100만×14%
   assert.equal(r.methodApplied, 'flat');
+  assert.equal(r.dividendCredit, 0); // ②가 크면 공제 없음
   assert.equal(r.nationalTax, 2_940_000);
   assert.equal(r.localTax, 294_000);
   assert.equal(r.koreanTax, 3_234_000);
   assert.equal(r.additional, 0); // 원천징수 15.4%로 이미 낸 만큼
 });
 
-test('다른 소득이 있으면 초과분이 그 사람의 한계세율로 계산된다', () => {
+test('배당 Gross-up 예시: 국내 배당 3,000만 + 근로소득금액 5,000만 → 국세 1,068만 원', () => {
   const r = calcDividend({ domestic: 30_000_000, otherIncome: 50_000_000 });
-  assert.equal(r.methodApplied, 'combined');
-  assert.equal(r.methodA, 11_440_000); // 280만 + basicTax(6,000만)=864만
+  assert.equal(r.financial, 30_000_000);
+  assert.equal(r.excess, 10_000_000);
+  assert.equal(r.grossUpBase, 10_000_000);
+  assert.equal(r.grossUp, 1_000_000); // 배당가산 10% = 100만 원
+  assert.equal(r.methodA, 11_680_000); // 280만 + basicTax(6,100만)=888만
   assert.equal(r.methodB, 10_440_000); // 420만 + basicTax(5,000만)=624만
-  assert.equal(r.nationalTax, 11_440_000);
-  assert.equal(r.localTax, 1_144_000);
+  assert.equal(r.methodApplied, 'combined');
+  assert.equal(r.dividendCredit, 1_000_000); // min(가산액 100만, ①−② 124만)
+  assert.equal(r.nationalTax, 10_680_000);
+  assert.equal(r.localTax, 1_068_000);
+  assert.equal(r.koreanTax, 11_748_000);
   assert.equal(r.prepaid, 4_620_000);
-  assert.equal(r.additional, 7_964_000);
+  assert.equal(r.additional, 7_128_000);
   assert.equal(r.bracket.rate, 0.24);
 });
 
@@ -122,4 +131,54 @@ test('입력이 비어 있으면 0원으로 계산한다', () => {
   assert.equal(r.financial, 0);
   assert.equal(r.totalTax, 0);
   assert.equal(r.effectiveRate, 0);
+});
+
+/* ── 배당가산(Gross-up)과 배당세액공제 ─────────────────── */
+
+test('배당가산: ETF·리츠·펀드 분배금은 가산 대상이 아니다', () => {
+  const r = calcDividend({ domesticExcluded: 30_000_000, otherIncome: 50_000_000 });
+  assert.equal(r.financial, 30_000_000);
+  assert.equal(r.grossUpBase, 0);
+  assert.equal(r.grossUp, 0);
+  assert.equal(r.methodA, 11_440_000); // 280만 + basicTax(6,000만)=864만
+  assert.equal(r.dividendCredit, 0);
+  assert.equal(r.nationalTax, 11_440_000);
+  assert.equal(r.additional, 7_964_000);
+});
+
+test('배당가산: 대상 금액은 2,000만 원 초과분까지만 잡는다', () => {
+  const r = calcDividend({ domestic: 50_000_000 });
+  assert.equal(r.excess, 30_000_000);
+  assert.equal(r.grossUpBase, 30_000_000);
+  assert.equal(r.grossUp, 3_000_000);
+  assert.equal(r.methodA, 6_490_000); // 280만 + basicTax(3,300만)=369만
+  assert.equal(r.methodB, 7_000_000); // 5,000만×14% → ②가 커서 공제 없음
+  assert.equal(r.dividendCredit, 0);
+  assert.equal(r.nationalTax, 7_000_000);
+  assert.equal(r.additional, 0);
+});
+
+test('배당가산: 기준금액은 이자가 먼저 채우고 배당은 남은 초과분만 가산한다', () => {
+  const r = calcDividend({ interest: 10_000_000, domestic: 30_000_000 });
+  assert.equal(r.financial, 40_000_000);
+  assert.equal(r.excess, 20_000_000);
+  assert.equal(r.grossUpBase, 10_000_000); // 이자 1,000만이 먼저 채운 뒤 남은 1,000만
+  assert.equal(r.grossUp, 1_000_000);
+});
+
+test('미국 배당이 기준금액을 채우면 국내 배당 가산액은 줄어든다', () => {
+  const r = calcDividend({ us: 15_000_000, domestic: 10_000_000 });
+  assert.equal(r.financial, 25_000_000);
+  assert.equal(r.excess, 5_000_000);
+  assert.equal(r.grossUpBase, 0); // 초과분 500만이 전부 미국 배당에서 나온다
+  assert.equal(r.grossUp, 0);
+  assert.equal(r.dividendCredit, 0);
+});
+
+test('2,000만 원 이하에서는 배당가산·배당세액공제가 없다', () => {
+  const r = calcDividend({ domestic: 20_000_000 });
+  assert.equal(r.mode, 'separate');
+  assert.equal(r.grossUpBase, 0);
+  assert.equal(r.grossUp, 0);
+  assert.equal(r.dividendCredit, 0);
 });

@@ -450,6 +450,7 @@ a { color: var(--blue-dark); }
 .cmp { width: 100%; border-collapse: collapse; font-size: 13px; margin-top: 10px; }
 .cmp th, .cmp td { padding: 10px 4px; border-bottom: 1px solid var(--line); text-align: right; font-variant-numeric: tabular-nums; }
 .cmp thead th { font-size: 11.5px; color: var(--muted); font-weight: 700; }
+.cmp thead th:first-child { text-align: left; }
 .cmp tbody th { text-align: left; font-weight: 600; color: var(--ink-2); font-size: 12.5px; }
 .cmp tbody th em { display: block; font-style: normal; font-size: 10.5px; color: var(--muted); font-weight: 500; word-break: break-word; }
 .cmp td.win { color: var(--good); font-weight: 800; }
@@ -745,4 +746,46 @@ a { color: var(--blue-dark); }
   .gcard h4 { font-size: 12.2px; }
   .preset { padding: 6px 10px; }
   .receipt { font-size: 12px; }
+}
+
+/* ── RIA(국내시장 복귀계좌) 과세특례 ──────────────────── */
+.ria-box {
+  background: var(--card); border: 1px solid var(--line); border-radius: var(--radius);
+  margin: 12px 0; overflow: hidden;
+}
+.ria-box[open] { border-color: #cfe0ff; }
+.ria-sum {
+  display: flex; align-items: center; gap: 8px; cursor: pointer; list-style: none;
+  padding: 13px 15px; background: #f8fafc;
+}
+.ria-sum::-webkit-details-marker { display: none; }
+.ria-box[open] .ria-sum { background: var(--blue-050); border-bottom: 1px solid #e2ecff; }
+.ria-ico {
+  width: 20px; height: 20px; flex: 0 0 20px; display: grid; place-items: center;
+  border-radius: 7px; background: var(--navy); color: #fff; font-size: 11px; font-weight: 800;
+}
+.ria-label { font-size: 13px; font-weight: 800; color: var(--navy); letter-spacing: -0.02em; }
+.ria-chip-note { margin-left: auto; font-size: 11px; font-weight: 700; color: var(--muted); }
+.ria-box[open] .ria-chip-note { color: var(--blue-dark); }
+.ria-body { padding: 14px 15px 16px; }
+.ria-lead { margin: 0 0 12px; font-size: 12.5px; line-height: 1.65; color: var(--ink-2); }
+.ria-lead em { font-style: normal; display: block; margin-top: 3px; font-size: 11px; color: var(--muted); }
+.ria-chips { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-top: 10px; }
+.ria-chip {
+  border: 1px solid var(--line); background: #fff; color: var(--ink-2);
+  border-radius: 999px; padding: 8px 10px; font-size: 11.5px; font-weight: 700;
+  font-family: inherit; cursor: pointer; white-space: nowrap; text-align: center;
+}
+.ria-chip.is-on { background: var(--navy); border-color: var(--navy); color: #fff; }
+.ria-body .kv { margin-top: 12px; border-top: 1px solid var(--line); }
+.ria-body .kv-row { border-bottom: 1px solid var(--line-2); }
+.ria-body .kv-row dt { color: var(--ink-2); }
+.ria-body .kv-row dt em { color: var(--muted); }
+.ria-body .kv-row dd { color: var(--navy); }
+.ria-body .kv-row dd.good { color: var(--good); }
+@media (min-width: 520px) {
+  .ria-chips { grid-template-columns: repeat(4, 1fr); }
+}
+@media (max-width: 420px) {
+  .ria-chip { padding: 7px 8px; font-size: 11px; }
 }
