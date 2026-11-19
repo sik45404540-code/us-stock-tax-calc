@@ -1,4 +1,4 @@
-# 🧮 TaxMoa — 미국주식 세금 계산기 허브
+# 🧮 TaxPing — 미국주식 세금 계산기 허브
 
 한국 거주자가 미국주식에 투자할 때 필요한 **세금·비용 계산기 4종**을 한 도메인에서 제공하는 정적 사이트입니다.
 
@@ -93,7 +93,7 @@ assets/dividend.js       배당 화면 로직
 assets/isa.js            ISA 화면 로직
 assets/fee.js            수수료 화면 로직
 assets/style.css         스타일(모바일 390px 우선, 허브 내비게이션 포함)
-assets/og-cover.png      OG 이미지 1200×630 (TaxMoa)
+assets/og-cover.png      OG 이미지 1200×630 (TaxPing)
 assets/favicon.svg, apple-touch-icon.png
 robots.txt / sitemap.xml (https://taxmoa.com 기준)
 tests/*.test.js          Node 단위 테스트 46개

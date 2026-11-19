@@ -34,5 +34,5 @@ class PrettyHandler(SimpleHTTPRequestHandler):
 
 if __name__ == "__main__":
     port = int(sys.argv[1]) if len(sys.argv) > 1 else 4173
-    print(f"TaxMoa preview: http://127.0.0.1:{port}/  (root={ROOT})")
+    print(f"TaxPing preview: http://127.0.0.1:{port}/  (root={ROOT})")
     ThreadingHTTPServer(("127.0.0.1", port), PrettyHandler).serve_forever()

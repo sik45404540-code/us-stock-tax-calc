@@ -29,7 +29,7 @@ def gradient(size, c1, c2):
     return img
 
 
-# ── OG 커버 1200x630 (TaxMoa 허브) ─────────────────────
+# ── OG 커버 1200x630 (TaxPing 허브) ─────────────────────
 W, H = 1200, 630
 img = gradient((W, H), NAVY, (20, 54, 88))
 d = ImageDraw.Draw(img, "RGBA")
@@ -39,9 +39,9 @@ for r in (760, 560, 380):
 
 # 브랜드 배지
 d.rounded_rectangle([80, 60, 148, 128], radius=18, fill=BLUE)
-d.text((114, 94), "TM", font=ImageFont.truetype(FONT, 32), fill=WHITE, anchor="mm")
-d.text((166, 78), "TaxMoa", font=ImageFont.truetype(FONT, 32), fill=WHITE, stroke_width=1, stroke_fill=WHITE)
-d.text((166, 114), "미국주식 세금 계산기 허브", font=ImageFont.truetype(FONT, 19), fill=MUTED)
+d.text((114, 94), "TP", font=ImageFont.truetype(FONT, 32), fill=WHITE, anchor="mm")
+d.text((166, 72), "TaxPing", font=ImageFont.truetype(FONT, 32), fill=WHITE, stroke_width=1, stroke_fill=WHITE)
+d.text((167, 122), "미국주식 세금 계산기 허브", font=ImageFont.truetype(FONT, 19), fill=MUTED)
 
 # 메인 카피
 f_main = ImageFont.truetype(FONT, 62)
@@ -69,7 +69,7 @@ size = 180
 icon = gradient((size, size), NAVY, (26, 78, 128))
 di = ImageDraw.Draw(icon, "RGBA")
 di.rounded_rectangle([0, 0, size - 1, size - 1], radius=40, fill=None)
-di.text((size / 2, size / 2), "TM", font=ImageFont.truetype(FONT, 60), fill=WHITE, anchor="mm", stroke_width=2, stroke_fill=WHITE)
+di.text((size / 2, size / 2), "TP", font=ImageFont.truetype(FONT, 60), fill=WHITE, anchor="mm", stroke_width=2, stroke_fill=WHITE)
 icon.save(f"{OUT}/apple-touch-icon.png", optimize=True)
 
 print("done", sorted(os.listdir(OUT)))
