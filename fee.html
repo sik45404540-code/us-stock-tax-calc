@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta name="theme-color" content="#0f2c4c" />
+<title>해외주식 수수료·환전우대 실수령 비교기 | TaxMoa</title>
+<meta name="description" content="수수료율(0.07% vs 0.25%)과 환전우대율(90~100%)을 넣으면 왕복 거래비용과 실수령 차이를 바로 계산합니다. 손익분기 수익률까지 보여 드립니다." />
+<link rel="canonical" href="https://taxmoa.com/fee.html" />
+<meta name="robots" content="index, follow" />
+<meta name="author" content="TaxMoa" />
+<meta property="og:type" content="website" />
+<meta property="og:site_name" content="TaxMoa" />
+<meta property="og:title" content="해외주식 수수료·환전우대 실수령 비교기" />
+<meta property="og:description" content="수수료율과 환전우대율이 왕복 거래에서 얼마를 가르는지 실수령으로 비교합니다." />
+<meta property="og:url" content="https://taxmoa.com/fee.html" />
+<meta property="og:image" content="https://taxmoa.com/assets/og-cover.png" />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta property="og:locale" content="ko_KR" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="해외주식 수수료·환전우대 비교" />
+<meta name="twitter:description" content="왕복 거래비용과 실수령 차이, 손익분기 수익률을 계산합니다." />
+<meta name="twitter:image" content="https://taxmoa.com/assets/og-cover.png" />
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png" />
+<link rel="stylesheet" href="assets/style.css?v=4" />
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebApplication",
+      "name": "해외주식 수수료·환전우대 실수령 비교기",
+      "url": "https://taxmoa.com/fee.html",
+      "applicationCategory": "FinanceApplication",
+      "operatingSystem": "All",
+      "inLanguage": "ko-KR",
+      "description": "투자금, 수수료율, 환전우대율을 입력하면 매수·매도 왕복 거래비용과 실수령 차이, 손익분기 수익률을 계산합니다.",
+      "offers": { "@type": "Offer", "price": "0", "priceCurrency": "KRW" },
+      "featureList": [
+        "두 계좌의 왕복 거래비용 비교",
+        "환전우대율을 반영한 실수령 계산",
+        "손익분기 수익률 계산",
+        "수수료·환전 비용 내역 분해"
+      ]
+    },
+    {
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "환전우대 100%면 환전 비용이 0원인가요?",
+          "acceptedAnswer": { "@type": "Answer", "text": "증권사가 고지한 기준 스프레드에 대한 우대율이 100%라면 그 스프레드 부담은 0원이 됩니다. 다만 기준환율 자체가 매매기준율과 다르거나 최소 적용 금액이 있으면 실제 비용이 남을 수 있어 약정 내용을 확인해야 합니다." }
+        },
+        {
+          "@type": "Question",
+          "name": "수수료 0.07%와 0.25%는 얼마나 차이 나나요?",
+          "acceptedAnswer": { "@type": "Answer", "text": "1,000만 원을 사고팔면 0.07%는 왕복 약 1만 4,000원, 0.25%는 약 5만 원으로 차이는 약 3만 6,000원입니다. 환전우대율이 다르면 차이는 더 벌어지고, 매매를 반복할수록 누적됩니다." }
+        },
+        {
+          "@type": "Question",
+          "name": "이 계산기에 양도소득세도 포함되나요?",
+          "acceptedAnswer": { "@type": "Answer", "text": "포함되지 않습니다. 이 계산기는 수수료와 환전 비용만 다룹니다. 세금은 양도세 계산기에서 250만 원 공제와 22% 세율로 따로 계산하세요." }
+        },
+        {
+          "@type": "Question",
+          "name": "손익분기 수익률이 왜 0%가 아닌가요?",
+          "acceptedAnswer": { "@type": "Answer", "text": "매수와 매도에 수수료와 환전 비용이 붙기 때문에 주가가 제자리여도 원금보다 적게 돌아옵니다. 그 비용을 만회할 만큼은 올라야 본전이 되며, 이 계산기가 그 수익률을 보여 줍니다." }
+        },
+        {
+          "@type": "Question",
+          "name": "최소 수수료가 있으면 계산이 달라지나요?",
+          "acceptedAnswer": { "@type": "Answer", "text": "네. 일부 증권사는 건당 최소 수수료나 최소 환전 금액을 두고 있어 소액 거래에서는 비율보다 최소 수수료가 더 클 수 있습니다. 소액으로 자주 거래한다면 약정서의 최소 수수료 조항을 확인하세요." }
+        }
+      ]
+    }
+  ]
+}
+</script>
+</head>
+<body>
+<a class="skip" href="#calc">계산기로 바로가기</a>
+
+<header class="topbar">
+  <div class="wrap topbar-in">
+    <a class="brand" href="./" aria-label="TaxMoa 홈">
+      <span class="brand-mark" aria-hidden="true">TM</span>
+      <span class="brand-text">TaxMoa<em>미국주식 세금 계산기</em></span>
+    </a>
+    <nav class="hubnav" aria-label="계산기">
+      <a href="./">양도세</a>
+      <a href="dividend.html">배당세</a>
+      <a href="isa.html">ISA</a>
+      <a href="fee.html" class="is-on" aria-current="page">수수료</a>
+      <a href="about.html">소개</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <section class="hero">
+    <div class="wrap">
+      <p class="eyebrow">왕복 1회 기준 · 수수료 + 환전</p>
+      <h1>수수료·환전우대 비교기</h1>
+      <p class="lede">수수료 <b>0.07%</b>와 <b>0.25%</b>, 환전우대 <b>90%</b>와 <b>100%</b>.<br />같은 주식을 사도 계좌에 따라 <b>실수령</b>이 달라집니다.</p>
+    </div>
+  </section>
+
+  <div class="wrap" id="calc">
+    <div class="card" style="margin-top:14px">
+      <h2 class="card-title">거래 조건</h2>
+      <p class="card-sub">매수했다가 한 번에 매도하는 <b>왕복 1회</b>를 계산합니다.</p>
+      <div class="fields">
+        <label class="field field-wide">
+          <span class="field-label">투자금<em>매수에 쓸 원화</em></span>
+          <span class="money"><input type="text" id="in-amount" inputmode="numeric" autocomplete="off" /><span class="unit">원</span></span>
+        </label>
+        <label class="field">
+          <span class="field-label">매도 수익률<em>0이면 본전</em></span>
+          <span class="money"><input type="text" id="in-return" inputmode="decimal" autocomplete="off" /><span class="unit">%</span></span>
+        </label>
+        <label class="field">
+          <span class="field-label">기준 환전 스프레드<em>매매기준율 대비</em></span>
+          <span class="money"><input type="text" id="in-spread" inputmode="decimal" autocomplete="off" /><span class="unit">%</span></span>
+        </label>
+      </div>
+      <p class="hint">스프레드는 증권사 앱·약정서에 적힌 환전 수수료율(매매기준율 대비)을 넣으세요. 모르면 1%로 두고 비교하면 됩니다.</p>
+    </div>
+
+    <div class="card">
+      <h2 class="card-title">비교할 두 계좌</h2>
+      <p class="card-sub">수수료율과 환전우대율은 앱의 수수료 안내·이벤트 페이지에서 확인할 수 있습니다.</p>
+
+      <div style="margin-bottom:14px">
+        <div class="card-head" style="margin-bottom:8px">
+          <label class="field" style="flex:1">
+            <span class="field-label">A 계좌 이름</span>
+            <input type="text" id="name-a" class="pos-name" value="A 계좌" autocomplete="off" />
+          </label>
+        </div>
+        <div class="fields">
+          <label class="field">
+            <span class="field-label">매매 수수료율</span>
+            <span class="money"><input type="text" id="in-fee-a" inputmode="decimal" autocomplete="off" /><span class="unit">%</span></span>
+          </label>
+          <label class="field">
+            <span class="field-label">환전우대율</span>
+            <span class="money"><input type="text" id="in-fx-a" inputmode="numeric" autocomplete="off" /><span class="unit">%</span></span>
+          </label>
+        </div>
+      </div>
+
+      <div>
+        <div class="card-head" style="margin-bottom:8px">
+          <label class="field" style="flex:1">
+            <span class="field-label">B 계좌 이름</span>
+            <input type="text" id="name-b" class="pos-name" value="B 계좌" autocomplete="off" />
+          </label>
+        </div>
+        <div class="fields">
+          <label class="field">
+            <span class="field-label">매매 수수료율</span>
+            <span class="money"><input type="text" id="in-fee-b" inputmode="decimal" autocomplete="off" /><span class="unit">%</span></span>
+          </label>
+          <label class="field">
+            <span class="field-label">환전우대율</span>
+            <span class="money"><input type="text" id="in-fx-b" inputmode="numeric" autocomplete="off" /><span class="unit">%</span></span>
+          </label>
+        </div>
+      </div>
+    </div>
+
+    <div class="card result" aria-live="polite">
+      <p class="result-label">실수령 차이</p>
+      <p class="result-value"><span id="out-diff">0</span><span class="result-unit">원</span></p>
+      <p class="result-note" id="out-note">투자금을 입력하면 두 계좌의 실수령을 비교합니다.</p>
+
+      <dl class="kv">
+        <div class="kv-row"><dt><span id="dt-a">A 실수령</span><em>매도 후 손에 남는 돈</em></dt><dd id="out-a">0원</dd></div>
+        <div class="kv-row"><dt><span id="dt-b">B 실수령</span></dt><dd id="out-b">0원</dd></div>
+        <div class="kv-row"><dt><span id="dt-a-cost">A 왕복 비용</span><em id="out-a-rate">0%</em></dt><dd id="out-a-cost">0원</dd></div>
+        <div class="kv-row"><dt><span id="dt-b-cost">B 왕복 비용</span><em id="out-b-rate">0%</em></dt><dd id="out-b-cost">0원</dd></div>
+        <div class="kv-row strong"><dt>손익분기 수익률<em>A / B</em></dt><dd><span id="out-be-a">0%</span> / <span id="out-be-b">0%</span></dd></div>
+      </dl>
+      <p class="kv-sub" id="break-even-note">비용을 만회하려면 이만큼은 올라야 본전입니다.</p>
+    </div>
+
+    <div class="card">
+      <h2 class="card-title">어디서 차이가 나는가</h2>
+      <p class="card-sub">같은 투자금·같은 수익률로 계산한 비용 내역입니다.</p>
+      <table class="cmp">
+        <thead><tr><th>비용 항목</th><th id="col-a">A</th><th id="col-b">B</th></tr></thead>
+        <tbody id="cost-body"></tbody>
+        <tfoot>
+          <tr><th>왕복 비용 합계</th><td id="cost-a">0원</td><td id="cost-b">0원</td></tr>
+          <tr><th>실수령</th><td id="net-a">0원</td><td id="net-b">0원</td></tr>
+        </tfoot>
+      </table>
+      <p class="sec-note" id="cmp-note"></p>
+    </div>
+  </div>
+
+  <section class="guide wrap" id="guide">
+    <h2 class="sec-title">해외주식 왕복 비용, 이렇게 계산합니다</h2>
+    <p class="sec-lede">수수료율만 보고 계좌를 고르면 절반을 놓칩니다. 환전 스프레드와 우대율까지 함께 봐야 실제 실수령이 보입니다. 2026년 기준 증권사 공시 구조를 설명합니다.</p>
+
+    <h3>1. 비용은 네 조각입니다</h3>
+    <p>해외주식을 사고팔면 네 번 비용이 붙습니다. ① 원화를 달러로 바꿀 때의 <b>매수 환전 스프레드</b>, ② 살 때의 <b>매수 수수료</b>, ③ 팔 때의 <b>매도 수수료</b>, ④ 달러를 원화로 되돌릴 때의 <b>매도 환전 스프레드</b>입니다. 여기에 세금(양도소득세·배당소득세)이 별도로 붙습니다.</p>
+    <div class="formula">
+      <div class="formula-step"><span>①</span><div><b>매수 환전 = 투자금 × 스프레드 × (1 − 우대율)</b><em>우대 100%면 0원, 90%면 스프레드의 10%</em></div></div>
+      <div class="formula-step"><span>②</span><div><b>매수 수수료 = 환전한 금액 × 수수료율</b><em>0.07%면 1,000만 원에 7,000원</em></div></div>
+      <div class="formula-step"><span>③</span><div><b>매도 수수료 = 매도 금액 × 수수료율</b><em>수익이 나면 수수료도 조금 커집니다</em></div></div>
+      <div class="formula-step"><span>④</span><div><b>매도 환전 = (매도금 − 수수료) × 스프레드 × (1 − 우대율)</b><em>원화로 돌아올 때 한 번 더</em></div></div>
+    </div>
+
+    <h3>2. 환전우대율은 '무엇에 대한' 우대인가</h3>
+    <p>환전우대 95%라는 말은 <b>기준 스프레드의 95%를 깎아 준다</b>는 뜻입니다. 기준 스프레드가 1%라면 실제 부담은 0.05%이고, 90%라면 0.1%가 남습니다. 100%라면 0원입니다. 그래서 <b>우대율만 보고는 비교할 수 없고, 기준 스프레드가 얼마인지</b>를 같이 봐야 합니다.</p>
+    <p>은행 창구의 현찰 살 때·팔 때 환율은 매매기준율 대비 1.7% 안팎의 스프레드를 두는 경우가 많습니다. 증권사는 자체 환전으로 이 폭을 줄이고 우대율을 얹는 구조라, 같은 90%라도 실제 부담이 다를 수 있습니다. 약정서나 앱의 <b>환전 수수료율 안내</b>에서 기준 스프레드를 확인하고 이 계산기에 넣으세요.</p>
+
+    <h3>3. 수수료 0.07%와 0.25%의 차이</h3>
+    <p>1,000만 원을 사고팔면 0.07%는 왕복 약 <b>1만 4,000원</b>, 0.25%는 약 <b>5만 원</b>입니다. 차이는 약 <b>3만 6,000원</b>입니다. 여기에 환전우대 90%가 겹치면 같은 1,000만 원에서 차이가 <b>5만 5,000원</b> 안팎으로 벌어집니다. 한 번의 거래로는 작아 보이지만, 한 달에 한 번씩 12번 돌리면 <b>40만 원 이상</b>이 됩니다.</p>
+    <p>수익률이 10%라면 차이는 6만 원을 넘습니다. 수수료는 매도 금액에 붙기 때문에 수익이 클수록 커지기 때문입니다. 장기 보유라면 수수료 차이는 작고, 자주 사고파는 전략이라면 결정적입니다.</p>
+
+    <h3>4. 손익분기 수익률 — 본전도 0%가 아닙니다</h3>
+    <p>비용이 붙으니 주가가 제자리여도 원금보다 적게 돌아옵니다. 1,000만 원, 수수료 0.07%, 우대 100%라면 본전까지 약 <b>0.14%</b>가 필요합니다. 수수료 0.25%, 우대 90%라면 약 <b>0.70%</b>가 필요합니다. 5배 차이입니다. 계산기의 「손익분기 수익률」은 이 값을 보여 줍니다.</p>
+
+    <h3>5. 자주 하는 실수</h3>
+    <ul class="checklist">
+      <li><b>수수료율만 비교</b> — 0.07% 계좌라도 환전우대가 낮으면 0.25% 계좌보다 불리할 수 있습니다.</li>
+      <li><b>이벤트 수수료를 영구로 착각</b> — 첫 거래·한시 이벤트는 기간이 끝나면 원래 수수료로 돌아갑니다.</li>
+      <li><b>최소 수수료 무시</b> — 소액 거래에서는 비율보다 건당 최소 수수료가 더 클 수 있습니다.</li>
+      <li><b>세금을 비용에 넣지 않음</b> — 거래비용과 세금은 따로입니다. 양도차익이 250만 원을 넘으면 세금도 실수령을 줄입니다.</li>
+    </ul>
+
+    <h3>6. 이 계산기가 가정한 것</h3>
+    <p>환율은 고정이라고 보고, 왕복 1회만 계산했습니다. 환전은 매수·매도 각각 한 번씩, 수수료는 매수·매도 금액에 같은 비율로 적용했습니다. 최소 수수료, 이벤트 기간, 세금, 배당 재투자, 환율 변동은 반영하지 않았습니다. 실제 실수령은 증권사 거래내역서의 비용 항목으로 확인하세요.</p>
+
+    <div class="disclaimer">
+      <p><b>참고용 안내</b> — 이 계산기는 입력한 수수료율·우대율로 비용을 추정하는 참고 도구입니다. 실제 부과 금액은 증권사 약정, 환율 적용 시점, 최소 수수료, 이벤트 조건에 따라 달라질 수 있습니다. 투자 판단과 그 결과는 투자자 본인에게 있습니다.</p>
+    </div>
+  </section>
+
+  <section class="faq wrap" id="faq">
+    <h2 class="sec-title">자주 묻는 질문</h2>
+    <details open>
+      <summary>환전우대 100%면 환전 비용이 0원인가요?</summary>
+      <p>증권사가 고지한 <b>기준 스프레드</b>에 대한 우대율이 100%라면 그 스프레드 부담은 0원이 됩니다. 다만 적용 기준환율이 매매기준율과 다르거나 최소 금액 조건이 있으면 실제 비용이 남을 수 있습니다.</p>
+    </details>
+    <details>
+      <summary>수수료 0.07%와 0.25%는 얼마나 차이 나나요?</summary>
+      <p>1,000만 원을 사고팔면 0.07%는 왕복 약 <b>1만 4,000원</b>, 0.25%는 약 <b>5만 원</b>으로 차이는 약 <b>3만 6,000원</b>입니다. 환전우대율이 다르면 차이는 더 커집니다.</p>
+    </details>
+    <details>
+      <summary>이 계산기에 양도소득세도 포함되나요?</summary>
+      <p>포함되지 않습니다. 이 계산기는 <b>수수료와 환전 비용</b>만 다룹니다. 세금은 <a href="./">양도세 계산기</a>에서 250만 원 공제와 22% 세율로 따로 계산하세요.</p>
+    </details>
+    <details>
+      <summary>손익분기 수익률이 왜 0%가 아닌가요?</summary>
+      <p>매수와 매도에 수수료·환전 비용이 붙기 때문에 주가가 제자리여도 원금보다 적게 돌아옵니다. 그 비용을 만회할 만큼은 올라야 본전이 됩니다.</p>
+    </details>
+    <details>
+      <summary>최소 수수료가 있으면 계산이 달라지나요?</summary>
+      <p>네. 일부 증권사는 건당 <b>최소 수수료</b>나 최소 환전 금액을 두고 있어 소액 거래에서는 비율보다 최소 수수료가 더 클 수 있습니다. 약정서의 최소 수수료 조항을 확인하세요.</p>
+    </details>
+  </section>
+
+  <section class="hub wrap" id="more">
+    <h2 class="sec-title">TaxMoa의 다른 계산기</h2>
+    <p class="sec-lede">비용을 줄였으면 세금도 확인하세요.</p>
+    <div class="hub-grid">
+      <a class="hub-card" href="./">
+        <span class="hub-ico" aria-hidden="true">↗</span>
+        <h3>미국주식 양도세 계산기</h3>
+        <p>250만 원 공제와 22% 세율로 예상 양도세를 계산하고, 세금 0원이 되는 매도 주수를 역산합니다.</p>
+        <span class="hub-go">계산하러 가기 →</span>
+      </a>
+      <a class="hub-card" href="dividend.html">
+        <span class="hub-ico" aria-hidden="true">%</span>
+        <h3>배당소득세 계산기</h3>
+        <p>국내·미국 배당과 이자를 합쳐 금융소득 2,000만 원 종합과세를 계산합니다.</p>
+        <span class="hub-go">계산하러 가기 →</span>
+      </a>
+      <a class="hub-card" href="isa.html">
+        <span class="hub-ico" aria-hidden="true">ISA</span>
+        <h3>ISA 절세 계산기</h3>
+        <p>비과세 200만·400만 원과 9.9% 분리과세가 일반계좌와 얼마나 차이 나는지 비교합니다.</p>
+        <span class="hub-go">계산하러 가기 →</span>
+      </a>
+      <a class="hub-card" href="about.html">
+        <span class="hub-ico" aria-hidden="true">?</span>
+        <h3>계산 기준과 면책 안내</h3>
+        <p>법령 근거와 기준일, 계산기의 한계, 문의 창구를 정리했습니다.</p>
+        <span class="hub-go">확인하기 →</span>
+      </a>
+    </div>
+  </section>
+</main>
+
+<footer class="foot">
+  <div class="wrap">
+    <p class="foot-brand">TaxMoa</p>
+    <p class="foot-links">
+      <a href="./">양도세 계산기</a><a href="dividend.html">배당세 계산기</a><a href="isa.html">ISA 계산기</a><a href="fee.html">수수료 비교</a>
+      <a href="about.html">사이트 소개</a><a href="contact.html">문의</a><a href="privacy.html">개인정보처리방침</a>
+    </p>
+    <p class="foot-note">이 사이트의 계산 결과는 참고용이며 세무·투자 자문이 아닙니다. 모든 계산은 이용자 기기에서만 이루어지고 입력값은 서버로 전송되지 않습니다.</p>
+    <p class="foot-copy">© 2026 TaxMoa · taxmoa.com</p>
+  </div>
+</footer>
+
+<script type="module" src="assets/fee.js?v=4"></script>
+</body>
+</html>

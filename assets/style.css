@@ -56,8 +56,7 @@ a { color: var(--blue-dark); }
 /* ── 상단 바 ───────────────────────────────────────── */
 .topbar {
   position: sticky; top: 0; z-index: 30;
-  background: rgba(255, 255, 255, .92);
-  backdrop-filter: saturate(1.4) blur(10px);
+  background: #ffffff;
   border-bottom: 1px solid var(--line);
 }
 .topbar-in { display: flex; align-items: center; justify-content: space-between; height: 58px; }
@@ -362,3 +361,140 @@ a { color: var(--blue-dark); }
 @media (prefers-reduced-motion: reduce) {
   * { animation: none !important; transition: none !important; scroll-behavior: auto; }
 }
+
+/* ══════════════════════════════════════════════════════════════
+   TaxMoa 허브 확장 (2026-11) — 계산기 허브·추가 계산기 공통 부품
+   ══════════════════════════════════════════════════════════════ */
+
+/* ── 상단 바: 브랜드 + 계산기 내비게이션 ───────────────── */
+.topbar-in { flex-direction: column; align-items: stretch; gap: 6px; height: auto; padding: 8px 18px 0; }
+.hubnav {
+  display: flex; gap: 4px; overflow-x: auto; padding-bottom: 8px;
+  scrollbar-width: none; -webkit-overflow-scrolling: touch;
+}
+.hubnav::-webkit-scrollbar { display: none; }
+.hubnav a {
+  flex: none; text-decoration: none; color: var(--ink-2);
+  font-size: 12.5px; font-weight: 700; letter-spacing: -0.02em;
+  padding: 7px 11px; border-radius: 999px; background: #eef2f8;
+  transition: background .15s ease, color .15s ease;
+}
+.hubnav a:hover { background: #e2e9f3; }
+.hubnav a.is-on { background: var(--navy); color: #fff; }
+
+@media (min-width: 700px) {
+  .topbar-in { flex-direction: row; align-items: center; justify-content: space-between; gap: 10px; height: 58px; padding: 0 18px; }
+  .hubnav { padding-bottom: 0; overflow: visible; }
+  .hubnav a { background: transparent; padding: 8px 11px; }
+  .hubnav a.is-on { background: var(--blue-050); color: var(--blue-dark); }
+}
+
+/* 탭이 상단 바에 가리지 않도록 JS가 --topbar-h 를 채운다 */
+.tabs { top: var(--topbar-h, 100px); }
+
+/* ── 허브 카드 ─────────────────────────────────────────── */
+.hub { padding-top: 34px; }
+.hub-grid { display: grid; gap: 10px; margin-top: 14px; }
+.hub-card {
+  display: block; text-decoration: none; color: inherit;
+  background: #fff; border: 1px solid var(--line); border-radius: 16px;
+  padding: 16px; box-shadow: var(--shadow);
+  transition: border-color .15s ease, transform .06s ease;
+}
+.hub-card:active { transform: translateY(1px); }
+.hub-card:hover { border-color: #c8d5e6; }
+.hub-ico {
+  display: inline-grid; place-items: center; width: 34px; height: 34px;
+  border-radius: 10px; background: var(--blue-050); color: var(--blue-dark);
+  font-size: 15px; font-weight: 800;
+}
+.hub-card h3 { margin: 9px 0 4px; font-size: 15px; letter-spacing: -0.025em; color: var(--navy); }
+.hub-card p { margin: 0; font-size: 12.5px; color: var(--muted); line-height: 1.62; }
+.hub-card .hub-go { display: inline-block; margin-top: 9px; font-size: 12px; font-weight: 800; color: var(--blue-dark); }
+.hub-card.is-here { border-color: #bcd0ea; background: linear-gradient(180deg, #f7faff 0%, #fff 70%); }
+.hub-card.is-here .hub-go { color: var(--muted); }
+@media (min-width: 640px) { .hub-grid { grid-template-columns: 1fr 1fr; } }
+
+/* ── 구간 선택(세그먼트) ───────────────────────────────── */
+.seg { display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; gap: 4px; background: #e8edf5; border-radius: 13px; padding: 4px; }
+.seg button {
+  appearance: none; border: 0; background: transparent; font-family: inherit;
+  font-size: 12.5px; font-weight: 700; color: var(--ink-2); letter-spacing: -0.02em;
+  padding: 10px 6px; border-radius: 10px; cursor: pointer;
+  transition: background .15s ease, color .15s ease, box-shadow .15s ease;
+}
+.seg button.is-on { background: #fff; color: var(--navy); box-shadow: 0 1px 3px rgba(16, 38, 68, .14); }
+.seg button:focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; }
+
+/* ── 안내 플래그 ───────────────────────────────────────── */
+.flags { display: flex; flex-direction: column; gap: 8px; margin: 12px 0 0; }
+.flag {
+  display: flex; gap: 9px; align-items: flex-start;
+  border-radius: 12px; padding: 12px 14px; font-size: 12.5px; line-height: 1.62;
+  background: var(--warn-bg); border: 1px solid var(--warn-line); color: #7b4a18;
+}
+.flag .flag-ico { flex: none; font-size: 13px; line-height: 1.5; }
+.flag b { color: #6b3d0f; }
+.flag.ok { background: var(--good-050); border-color: #c6e8d8; color: #0b5f42; }
+.flag.ok b { color: #084a33; }
+.flag.info { background: var(--blue-050); border-color: #cfe0ff; color: #1b4b8f; }
+.flag.info b { color: #143d78; }
+.flag.warn { background: #fff4f2; border-color: #f7cfc8; color: #8c2b1c; }
+.flag.warn b { color: #742214; }
+
+/* ── 비교 표 ───────────────────────────────────────────── */
+.cmp { width: 100%; border-collapse: collapse; font-size: 13px; margin-top: 10px; }
+.cmp th, .cmp td { padding: 10px 4px; border-bottom: 1px solid var(--line); text-align: right; font-variant-numeric: tabular-nums; }
+.cmp thead th { font-size: 11.5px; color: var(--muted); font-weight: 700; }
+.cmp tbody th { text-align: left; font-weight: 600; color: var(--ink-2); font-size: 12.5px; }
+.cmp tbody th em { display: block; font-style: normal; font-size: 10.5px; color: var(--muted); font-weight: 500; word-break: break-word; }
+.cmp td.win { color: var(--good); font-weight: 800; }
+.cmp tfoot td, .cmp tfoot th { border-bottom: 0; border-top: 1px solid var(--line); font-weight: 800; color: var(--navy); }
+
+/* ── 두 칸 결과 ────────────────────────────────────────── */
+.duo { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 12px; }
+.duo-cell { background: #f8fafc; border: 1px solid var(--line); border-radius: 13px; padding: 13px 14px; }
+.duo-cell.is-best { background: var(--good-050); border-color: #c6e8d8; }
+.duo-label { margin: 0 0 6px; font-size: 11.5px; font-weight: 700; color: var(--muted); }
+.duo-value { margin: 0; font-size: 17px; font-weight: 800; color: var(--navy); letter-spacing: -0.03em; font-variant-numeric: tabular-nums; }
+.duo-note { margin: 5px 0 0; font-size: 11.5px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.duo-cell.is-best .duo-label, .duo-cell.is-best .duo-note { color: #0b5f42; }
+
+/* ── 결과 카드 보조 ────────────────────────────────────── */
+.result .kv-row dd.neg { color: #ffb4a6; }
+.result .kv-sub { margin: 12px 0 0; font-size: 11.5px; color: #93b0cf; line-height: 1.6; }
+.meter-fill.is-over { background: linear-gradient(90deg, #d97706 0%, #f0b429 100%); }
+.sec-note { margin: 10px 0 0; font-size: 12px; color: var(--muted); line-height: 1.65; }
+
+/* ── 정보 페이지(소개·문의·방침) ───────────────────────── */
+.page-head { padding: 24px 0 4px; background: linear-gradient(180deg, #ffffff 0%, var(--bg) 100%); border-bottom: 1px solid var(--line-2); }
+.page-head h1 { margin: 0 0 8px; font-size: clamp(23px, 6.6vw, 32px); letter-spacing: -0.035em; color: var(--navy); line-height: 1.25; }
+.page-head p { margin: 0; font-size: 13.5px; color: var(--ink-2); line-height: 1.7; }
+.page-head .eyebrow { margin-bottom: 10px; }
+.prose { padding-top: 22px; }
+.prose h2 { margin: 26px 0 8px; font-size: 16.5px; letter-spacing: -0.03em; color: var(--navy); }
+.prose h2:first-child { margin-top: 0; }
+.prose p, .prose li { font-size: 14px; color: var(--ink-2); line-height: 1.78; }
+.prose p { margin: 0 0 10px; }
+.prose ul, .prose ol { margin: 8px 0 12px; padding-left: 20px; }
+.prose li { margin-bottom: 6px; }
+.prose b { color: var(--navy); }
+.prose a { font-weight: 700; }
+.prose .card { margin-bottom: 12px; }
+.meta-list { display: grid; gap: 8px; margin: 12px 0 0; }
+.meta-row { display: flex; justify-content: space-between; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--line); font-size: 13px; }
+.meta-row:last-child { border-bottom: 0; }
+.meta-row dt { color: var(--muted); font-weight: 600; }
+.meta-row dd { margin: 0; color: var(--navy); font-weight: 700; text-align: right; word-break: break-all; }
+
+/* ── 좁은 화면 보정 ────────────────────────────────────── */
+@media (max-width: 420px) {
+  .hubnav a { font-size: 12px; padding: 7px 10px; }
+  .duo { grid-template-columns: 1fr; }
+  .cmp { font-size: 12.5px; }
+  .cmp tbody th em { font-size: 10px; }
+  .page-head { padding-top: 20px; }
+}
+
+/* 앵커·스크롤 위치가 상단 바에 가리지 않도록 */
+[id] { scroll-margin-top: calc(var(--topbar-h, 100px) + 12px); }

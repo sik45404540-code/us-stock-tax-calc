@@ -527,6 +527,15 @@ function renderDday() {
   else el.textContent = '마감 지남';
 }
 
+/* ── 상단 바 높이(탭이 가리지 않도록) ────────────────── */
+function syncTopbarHeight() {
+  const bar = document.querySelector('.topbar');
+  if (!bar) return;
+  const h = Math.round(bar.getBoundingClientRect().height);
+  if (h > 0) document.documentElement.style.setProperty('--topbar-h', `${h}px`);
+}
+window.addEventListener('resize', syncTopbarHeight);
+
 /* ── 시작 ──────────────────────────────────────────── */
 function hydrateInputs() {
   const map = { 'in-profit': 'profit', 'in-loss': 'loss', 'in-expenses': 'expenses', 'plan-profit': 'profit', 'plan-loss': 'loss' };
@@ -542,3 +551,5 @@ renderPositions();
 renderResults();
 renderLedger();
 renderDday();
+syncTopbarHeight();
+window.addEventListener('load', syncTopbarHeight);

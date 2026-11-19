@@ -4,27 +4,27 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 <meta name="theme-color" content="#0f2c4c" />
-<title>미국주식 양도세 계산기 2026 | 250만원 공제·손익통산·절세 매도 역산</title>
+<title>미국주식 양도세 계산기 2026 | 250만원 공제·손익통산 역산 | TaxMoa</title>
 <meta name="description" content="미국주식 양도소득세를 바로 계산합니다. 실현 손익을 넣으면 250만 원 기본공제와 22% 세율로 예상 세액을 계산하고, 세금을 0원으로 만드는 손실 종목 매도 주수·금액까지 역산해 드립니다. 2026년 연말 결제 마감일 안내 포함." />
-<link rel="canonical" href="https://us-stock-tax-calc.pages.dev/" />
+<link rel="canonical" href="https://taxmoa.com/" />
 <meta name="robots" content="index, follow" />
-<meta name="author" content="StockTax" />
+<meta name="author" content="TaxMoa" />
 <meta property="og:type" content="website" />
-<meta property="og:site_name" content="StockTax" />
+<meta property="og:site_name" content="TaxMoa" />
 <meta property="og:title" content="미국주식 양도세 계산기 · 세금 0원 절세 매도 역산" />
 <meta property="og:description" content="250만 원 공제 + 22%로 예상 양도세를 계산하고, 손실 종목 몇 주를 팔아야 세금이 0원이 되는지 바로 확인하세요." />
-<meta property="og:url" content="https://us-stock-tax-calc.pages.dev/" />
-<meta property="og:image" content="https://us-stock-tax-calc.pages.dev/assets/og-cover.png" />
+<meta property="og:url" content="https://taxmoa.com/" />
+<meta property="og:image" content="https://taxmoa.com/assets/og-cover.png" />
 <meta property="og:image:width" content="1200" />
 <meta property="og:image:height" content="630" />
 <meta property="og:locale" content="ko_KR" />
 <meta name="twitter:card" content="summary_large_image" />
 <meta name="twitter:title" content="미국주식 양도세 계산기 · 절세 매도 역산" />
 <meta name="twitter:description" content="실현 손익으로 예상 세액과 '세금 0원 매도 주수'를 한 번에 계산합니다." />
-<meta name="twitter:image" content="https://us-stock-tax-calc.pages.dev/assets/og-cover.png" />
+<meta name="twitter:image" content="https://taxmoa.com/assets/og-cover.png" />
 <link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png" />
-<link rel="stylesheet" href="assets/style.css?v=3" />
+<link rel="stylesheet" href="assets/style.css?v=4" />
 
 <script type="application/ld+json">
 {
@@ -33,7 +33,7 @@
     {
       "@type": "WebApplication",
       "name": "미국주식 양도세 계산기",
-      "url": "https://us-stock-tax-calc.pages.dev/",
+      "url": "https://taxmoa.com/",
       "applicationCategory": "FinanceApplication",
       "operatingSystem": "All",
       "inLanguage": "ko-KR",
@@ -108,14 +108,16 @@
 
 <header class="topbar">
   <div class="wrap topbar-in">
-    <a class="brand" href="./" aria-label="StockTax 홈">
-      <span class="brand-mark" aria-hidden="true">ST</span>
-      <span class="brand-text">StockTax<em>미국주식 양도세</em></span>
+    <a class="brand" href="./" aria-label="TaxMoa 홈">
+      <span class="brand-mark" aria-hidden="true">TM</span>
+      <span class="brand-text">TaxMoa<em>미국주식 세금 계산기</em></span>
     </a>
-    <nav class="topnav" aria-label="주요 메뉴">
-      <a href="#calc">계산기</a>
-      <a href="#guide">절세 가이드</a>
-      <a href="#faq">FAQ</a>
+    <nav class="hubnav" aria-label="계산기">
+      <a href="./" class="is-on" aria-current="page">양도세</a>
+      <a href="dividend.html">배당세</a>
+      <a href="isa.html">ISA</a>
+      <a href="fee.html">수수료</a>
+      <a href="about.html">소개</a>
     </nav>
   </div>
 </header>
@@ -268,6 +270,7 @@
         </div>
         <p class="hint" id="led-msg" role="status"></p>
       </div>
+      <p class="sec-note">배당금에도 세금이 붙습니다. <a href="dividend.html">배당소득세 계산기</a>에서 금융소득 2,000만 원 종합과세 여부를 확인하세요.</p>
     </section>
   </div>
 
@@ -359,17 +362,51 @@
       <p>2020년 1월 1일 이후 양도분부터 국내·해외 주식 손익통산이 허용됩니다. 단, 국내주식은 양도세 과세 대상(상장법인 대주주, 비상장주식 등)인 경우에만 해당합니다.</p>
     </details>
   </section>
+
+  <section class="hub wrap" id="more">
+    <h2 class="sec-title">TaxMoa의 다른 계산기</h2>
+    <p class="sec-lede">미국주식 투자에서 세금은 양도세만이 아닙니다. 배당·계좌·거래비용까지 한 곳에서 확인하세요.</p>
+    <div class="hub-grid">
+      <a class="hub-card" href="dividend.html">
+        <span class="hub-ico" aria-hidden="true">%</span>
+        <h3>배당소득세 · 금융소득 종합과세</h3>
+        <p>국내 배당 15.4%, 미국 배당 현지 15%. 금융소득 2,000만 원을 넘을 때 늘어나는 세금과 건강보험 피부양자 위험까지 계산합니다.</p>
+        <span class="hub-go">계산하러 가기 →</span>
+      </a>
+      <a class="hub-card" href="isa.html">
+        <span class="hub-ico" aria-hidden="true">ISA</span>
+        <h3>ISA 절세 계산기</h3>
+        <p>일반형 200만 원·서민형 400만 원 비과세. 같은 수익을 일반계좌에 넣었을 때와 비교해 실제로 아끼는 금액을 보여 줍니다.</p>
+        <span class="hub-go">계산하러 가기 →</span>
+      </a>
+      <a class="hub-card" href="fee.html">
+        <span class="hub-ico" aria-hidden="true">₩</span>
+        <h3>해외주식 수수료 · 환전우대 비교</h3>
+        <p>수수료 0.07%와 0.25%, 환전우대 90%와 100%가 왕복 거래에서 얼마를 가르는지 실수령으로 비교합니다.</p>
+        <span class="hub-go">비교하러 가기 →</span>
+      </a>
+      <a class="hub-card" href="about.html">
+        <span class="hub-ico" aria-hidden="true">?</span>
+        <h3>계산 기준과 면책 안내</h3>
+        <p>어떤 법령과 기준일로 계산했는지, 어디까지 신뢰할 수 있는지 정리했습니다. 문의·오류 제보 창구도 함께 안내합니다.</p>
+        <span class="hub-go">확인하기 →</span>
+      </a>
+    </div>
+  </section>
 </main>
 
 <footer class="foot">
   <div class="wrap">
-    <p class="foot-brand">StockTax</p>
-    <p class="foot-links"><a href="privacy.html">개인정보처리방침</a><a href="#guide">이용 안내</a><a href="#faq">FAQ</a></p>
+    <p class="foot-brand">TaxMoa</p>
+    <p class="foot-links">
+      <a href="./">양도세 계산기</a><a href="dividend.html">배당세 계산기</a><a href="isa.html">ISA 계산기</a><a href="fee.html">수수료 비교</a>
+      <a href="#guide">이용 안내</a><a href="about.html">사이트 소개</a><a href="contact.html">문의</a><a href="privacy.html">개인정보처리방침</a>
+    </p>
     <p class="foot-note">이 사이트의 계산 결과는 참고용이며 세무·투자 자문이 아닙니다. 모든 계산은 이용자 기기에서만 이루어지고 입력값은 서버로 전송되지 않습니다.</p>
-    <p class="foot-copy">© 2026 StockTax</p>
+    <p class="foot-copy">© 2026 TaxMoa · taxmoa.com</p>
   </div>
 </footer>
 
-<script type="module" src="assets/app.js?v=3"></script>
+<script type="module" src="assets/app.js?v=4"></script>
 </body>
 </html>
