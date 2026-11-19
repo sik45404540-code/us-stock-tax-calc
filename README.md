@@ -1,13 +1,13 @@
 # 🧮 TaxPing — 미국주식 세금 계산기 허브
 
-한국 거주자가 미국주식에 투자할 때 필요한 **세금·비용 계산기 4종**을 한 도메인에서 제공하는 정적 사이트입니다.
+한국 거주자가 미국주식에 투자할 때 필요한 **세금·비용 계산기 5종**을 한 도메인에서 제공하는 정적 사이트입니다.
 
 - **공개 주소(목표)**: https://taxmoa.com
 - **Cloudflare Pages**: 프로젝트 `us-stock-tax-calc` → https://us-stock-tax-calc.pages.dev
 - **저장소**: https://github.com/sik45404540-code/us-stock-tax-calc (public)
 - **구성**: 순수 HTML/CSS/JS (프레임워크 없음) · 빌드 없음 · 정적 파일 그대로 배포 · 서버 없음 · 외부 API 호출 없음
 
-## 계산기 4종
+## 계산기 5종
 
 | 페이지 | 계산기 | 핵심 |
 | --- | --- | --- |
@@ -15,6 +15,7 @@
 | `dividend.html` | 배당소득세 · 금융소득 종합과세 | 국내 배당·이자 15.4%, 미국 배당 현지 15%, 금융소득 2,000만 원 초과 시 비교과세(소득세법 제62조)·외국납부세액공제·건강보험 피부양자 위험 |
 | `isa.html` | ISA 절세 | 일반형 200만 / 서민·농어민형 400만 비과세, 초과분 9.9%, 손익통산, 납입한도, 만기 연금 전환 세액공제 |
 | `fee.html` | 수수료 · 환전우대 | 두 계좌의 왕복 거래비용(매수·매도 수수료 + 환전 스프레드×우대율), 실수령 차이, 손익분기 수익률 |
+| `gift.html` | 증여세 · 배우자 증여 절세 | 관계별 10년 공제(배우자 6억·직계존속 5천만/미성년 2천만·기타친족 1천만), 혼인·출산 1억 추가공제, 세대생략 30%·미성년 40% 할증, 과세최저한 50만 원, 신고세액공제 3%, 단계별 영수증. 배우자 미국주식 증여의 양도세 절세 비교(이월과세 1년) |
 
 정보 페이지: `about.html`(계산 기준·면책), `contact.html`(문의·오류 제보), `privacy.html`(개인정보·쿠키·광고 고지 — AdSense 심사 대비).
 
@@ -63,6 +64,17 @@
 - 파일은 `FileReader`(arrayBuffer)로 브라우저 안에서만 읽고 전송·저장하지 않음
 - **증권사별 CSV 받는 법**: 업로드 영역 위 `? 증권사별 CSV 받는 법` 토글(`<details>`, 기본 닫힘)을 누르면 키움·신한·삼성·NH·토스·미래에셋 6개 증권사 탭이 펼쳐집니다. 메뉴 경로·HTS 조회 번호(`[3141]` `[7880]` `[6067]` `[9467]` `[9468]`)와 `CSV(쉼표로 분리)` 저장 순서를 안내합니다. 자바스크립트가 없어도 토글은 열리고 닫히며, 390px에서는 3열×2줄로 접혀 이름이 잘리지 않습니다
 
+### 증여세 (2026년 증여분)
+근거: 상속세 및 증여세법 제53조·제53조의2·제55조·제56조·제57조·제58조·제69조, 소득세법 제97조의2, 국세청 증여세 안내.
+
+1. 과세가액 = 증여재산 + 같은 증여자에게서 10년 내 받은 재산(합계 1천만 원 이상일 때만 합산, 제47조②)
+2. 공제 = 관계별 10년 누계 한도 − 이미 쓴 금액 + 혼인·출산 1억(직계존속만, 혼인+출산 통합 1억)
+3. 과세표준 = max(0, 과세가액 − 공제) → **50만 원 미만이면 과세최저한으로 0원**(제55조②)
+4. 산출세액 = 과세표준 × 세율 − 누진공제 (10% / 20%−1천만 / 30%−6천만 / 40%−1.6억 / 50%−4.6억)
+5. 세대생략 할증 = 산출세액 × 30%(미성년자이고 증여재산가액 20억 초과 시 40%, 제57조)
+6. 납부세액 = 산출세액 + 할증 − 기납부세액, 그 뒤 **신고세액공제 3%**(제69조, 기본 ON)
+7. 배우자 증여 비교: A 바로 매도 = (평가액 − 원취득가 − 필요경비 − 250만) × 22%, B 증여 후 1년 초과 매도 = 증여세만(매도가=증여평가액이면 양도차익 0원). 1년 내 매도 시 이월과세로 취득가액이 원래대로 돌아가고 낸 증여세는 필요경비
+
 ### 수수료
 - 매수 환전 = 투자금 × 스프레드 × (1 − 우대율), 매수 수수료 = 환전금액 × 수수료율
 - 매도 수수료 = 매도금액 × 수수료율, 매도 환전 = (매도금 − 수수료) × 스프레드 × (1 − 우대율)
@@ -71,13 +83,14 @@
 ## 검증
 
 ```bash
-node --test tests/          # 85개 테스트 전부 통과
+node --test tests/          # 111개 테스트 전부 통과
 ```
 
 - `tests/tax.test.js` — 양도세·역산·장부·연말 마감 19건
 - `tests/dividend.test.js` — 15.4%/15%, 비교과세 ①②, 외국납부세액공제 한도, 피부양자, 세율표 12건
 - `tests/isa.test.js` — 비과세·분리과세·손익통산·한도 경고·연금 전환 9건
 - `tests/fee.test.js` — 환전우대·왕복비용·손익분기·계좌 비교 6건
+- `tests/gift.test.js` — 관계별 공제·혼인·출산·과세최저한·10년 합산·세대생략 할증·세율 구간·배우자 증여 비교·이월과세 26건
 - `tests/csv.test.js` — 인코딩(UTF-8·BOM·CP949·UTF-16LE)·구분자·머리글 탐색·자동 매핑·숫자 파싱·집계·환율 환산·샘플 끝단 검증 34건
 - `tests/guide.test.js` — 「증권사별 CSV 받는 법」 토글 위치·초기 닫힘·6개 탭/패널 짝·핵심 메뉴 경로 5건
 
@@ -103,7 +116,7 @@ python3 tools/guide-check.py
 python3 tools/guide-check.py https://taxmoa.com live
 ```
 
-Playwright headless Chromium으로 6개 페이지에 값을 입력하고 화면 숫자를 확인한 뒤 `downloads/us-stock-tax/`에 스크린샷을 남깁니다(27개 확인 항목).
+Playwright headless Chromium으로 7개 페이지(증여세 포함)에 값을 입력하고 화면 숫자·모바일 내비게이션을 확인한 뒤 `downloads/us-stock-tax/`에 스크린샷을 남깁니다(55개 확인 항목).
 
 ## 파일
 
@@ -117,6 +130,7 @@ src/tax.js               양도세 코어
 src/dividend.js          배당·금융소득 코어
 src/isa.js               ISA 코어
 src/fee.js               수수료 코어
+src/gift.js              증여세·배우자 증여 비교 코어
 assets/app.js            양도세 화면 로직
 assets/csv.js            CSV 탭 화면 로직(파일 읽기·매핑·표시·계산기 연결)
 assets/guide.js          증권사별 CSV 가이드 탭 전환(바깥 토글은 <details>)
@@ -125,11 +139,12 @@ src/csv-sample.js        샘플 CSV(CP949) Base64
 assets/dividend.js       배당 화면 로직
 assets/isa.js            ISA 화면 로직
 assets/fee.js            수수료 화면 로직
+assets/gift.js           증여세 화면 로직(탭·단위 전환·프리셋·영수증)
 assets/style.css         스타일(모바일 390px 우선, 허브 내비게이션 포함)
 assets/og-cover.png      OG 이미지 1200×630 (TaxPing)
 assets/favicon.svg, apple-touch-icon.png
 robots.txt / sitemap.xml (https://taxmoa.com 기준)
-tests/*.test.js          Node 단위 테스트 85개
+tests/*.test.js          Node 단위 테스트 111개
 tools/mobile-check.py    Playwright 모바일 점검
 tools/csv-check.py       Playwright CSV 탭 점검
 tools/guide-check.py     Playwright CSV 가이드 토글 점검
@@ -143,7 +158,7 @@ preview-390x844.html     검수용 390×844 프리뷰(noindex)
 
 - Cloudflare Pages: 프로젝트 `us-stock-tax-calc`, 프레임워크 없음, 빌드 명령 없음, 출력 디렉터리 `/`
 - 커스텀 도메인 `taxmoa.com` / `www.taxmoa.com` 연결
-- 자산 캐시: `assets/style.css?v=6`·`assets/*.js?v=6` — 파일을 고치면 N을 올려야 방문자 브라우저에 바로 반영됩니다.
+- 자산 캐시: `assets/style.css?v=7`·`assets/*.js?v=N` — 파일을 고치면 N을 올려야 방문자 브라우저에 바로 반영됩니다.
 - **주소 표기**: Cloudflare Pages는 `dividend.html`을 `/dividend`로 308 리다이렉트합니다. 그래서 canonical·og:url·사이트맵·내부 링크는 확장자 없는 주소(`https://taxmoa.com/dividend`)를 씁니다.
 
 ## 알아 둘 것

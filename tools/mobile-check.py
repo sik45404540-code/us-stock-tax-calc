@@ -32,6 +32,10 @@ def text(page, sel):
     return page.inner_text(sel).strip()
 
 
+def val(page, sel):
+    return page.input_value(sel).strip()
+
+
 def type_money(page, sel, value):
     page.click(sel)
     page.fill(sel, "")
@@ -45,7 +49,9 @@ def scroll_to(page, sel):
             const el = document.querySelector(sel);
             if (!el) return;
             const bar = document.querySelector('.topbar');
-            const top = el.getBoundingClientRect().top + window.scrollY - (bar ? bar.offsetHeight : 0) - 14;
+            const tabbar = document.querySelector('.tabs');
+            const offset = (bar ? bar.offsetHeight : 0) + (tabbar ? tabbar.offsetHeight : 0);
+            const top = el.getBoundingClientRect().top + window.scrollY - offset - 12;
             window.scrollTo({ top: Math.max(0, top), behavior: 'instant' });
         }""",
         sel,
@@ -143,7 +149,86 @@ with sync_playwright() as p:
     scroll_to(page, "#cost-body")
     shot(page, "08-fee-breakdown")
 
-    # ── 5. 정보 페이지 ───────────────────────────────
+    # ── 5. 증여세 ────────────────────────────────────
+    page.goto(f"{BASE}/gift", wait_until="networkidle")
+    check("gift.h1", text(page, "h1"), "증여세 계산기")
+    check("gift.기본세액", text(page, "#g-total"), "4,850,000")
+    check("gift.과세표준", text(page, "#g-base"), "50,000,000")
+    check("gift.영수증마지막", text(page, "#g-receipt tr.is-total th"), "납부할 증여세")
+
+    page.select_option("#g-relation", "spouse")
+    page.wait_for_timeout(150)
+    type_money(page, "#g-amount", 600_000_000)
+    check("gift.배우자6억", text(page, "#g-total"), "0")
+    check("gift.공제안내", text(page, "#g-zero-title"), "공제 한도 안")
+
+    type_money(page, "#g-amount", 1_000_000_000)
+    check("gift.배우자10억", text(page, "#g-total"), "67,900,000")
+    check("gift.적용세율", text(page, "#g-rate"), "20%")
+    scroll_to(page, "#pg-gift .result")
+    shot(page, "gift")
+
+    page.select_option("#g-relation", "parentAdult")
+    page.wait_for_timeout(150)
+    type_money(page, "#g-amount", 300_000_000)
+    check("gift.성인자녀3억", text(page, "#g-total"), "38,800,000")
+    check("gift.혼인공제가능", str(page.is_enabled("#g-marriage")), "True")
+    page.check("#g-marriage")
+    page.wait_for_timeout(150)
+    check("gift.혼인공제", text(page, "#g-total"), "19,400,000")
+    page.uncheck("#g-marriage")
+    page.check("#g-skip")
+    page.wait_for_timeout(150)
+    check("gift.세대생략30", text(page, "#g-total"), "50,440,000")
+    check("gift.미성년토글", str(page.is_visible("#g-minor-row")), "True")
+    page.uncheck("#g-skip")
+
+    page.click(".seg-xs button[data-unit='man']")
+    type_money(page, "#g-amount", 5)
+    check("gift.만원입력", val(page, "#g-amount"), "5")
+    check("gift.만원계산", text(page, "#g-total"), "0")
+    page.click(".seg-xs button[data-unit='won']")
+    page.click(".preset[data-preset='100000000']")
+    page.wait_for_timeout(120)
+    check("gift.프리셋", val(page, "#g-amount"), "100,000,000")
+
+    # 배우자 증여 절세
+    page.click("#tab-spouse")
+    page.wait_for_timeout(250)
+    check("spouse.h2", text(page, "#pg-spouse h2"), "지금 팔까")
+    check("spouse.절세액", text(page, "#s-saving"), "43,450,000")
+    check("spouse.A안", text(page, "#s-tax-a"), "43,450,000")
+    check("spouse.B안", text(page, "#s-tax-b"), "0")
+    type_money(page, "#s-value", 800_000_000)
+    type_money(page, "#s-cost", 200_000_000)
+    check("spouse.8억절세", text(page, "#s-saving"), "102,350,000")
+    check("spouse.8억증여세", text(page, "#s-tax-b"), "29,100,000")
+    check("spouse.1년내매도", text(page, "#s-early-text"), "154,148,000")
+    scroll_to(page, "#pg-spouse .result")
+    shot(page, "15-gift-spouse")
+    page.click("#tab-gift")
+
+    # ── 6. 상단 내비게이션(6개) ───────────────────────
+    page.goto(f"{BASE}/gift", wait_until="networkidle")
+    nav = page.evaluate(
+        """() => {
+            const n = document.querySelector('.hubnav');
+            const links = [...n.querySelectorAll('a')];
+            return {
+                items: links.map(a => a.textContent.trim()).join(','),
+                sw: n.scrollWidth, cw: n.clientWidth,
+                rows: new Set(links.map(a => Math.round(a.getBoundingClientRect().top))).size,
+                doc: document.documentElement.scrollWidth, win: window.innerWidth,
+            };
+        }"""
+    )
+    check("nav.6개항목", nav["items"], "양도세,배당세,ISA,수수료,증여세,소개")
+    check("nav.가로스크롤없음", str(nav["sw"] <= nav["cw"] + 1), "True")
+    check("nav.한줄", str(nav["rows"] == 1), "True")
+    check("nav.본문넘침없음", str(nav["doc"] <= nav["win"] + 1), "True")
+    shot(page, "16-gift-nav")
+
+    # ── 7. 정보 페이지 ───────────────────────────────
     page.goto(f"{BASE}/about", wait_until="networkidle")
     check("about.h1", text(page, "h1"), "계산은 가볍게")
     shot(page, "09-about")
@@ -153,12 +238,13 @@ with sync_playwright() as p:
     page.goto(f"{BASE}/privacy", wait_until="networkidle")
     check("privacy.광고고지", text(page, "main"), "Google AdSense")
 
-    # ── 6. 링크·구조 점검 ────────────────────────────
+    # ── 8. 링크·구조 점검 ────────────────────────────
     page.goto(f"{BASE}/", wait_until="networkidle")
     for href, want in [
         ("a[href='dividend']", "dividend"),
         ("a[href='isa']", "isa"),
         ("a[href='fee']", "fee"),
+        ("a[href='gift']", "gift"),
         ("a[href='about']", "about"),
         ("a[href='contact']", "contact"),
         ("a[href='privacy']", "privacy"),

@@ -493,7 +493,7 @@ a { color: var(--blue-dark); }
 
 /* ── 좁은 화면 보정 ────────────────────────────────────── */
 @media (max-width: 420px) {
-  .hubnav a { font-size: 12px; padding: 7px 10px; }
+  .hubnav a { font-size: 11.8px; padding: 7px 9px; letter-spacing: -0.03em; }
   .duo { grid-template-columns: 1fr; }
   .cmp { font-size: 12.5px; }
   .cmp tbody th em { font-size: 10px; }
@@ -657,4 +657,92 @@ a { color: var(--blue-dark); }
 @media (min-width: 560px) {
   .broker-tabs { grid-template-columns: repeat(6, minmax(0, 1fr)); }
   .broker-tab { font-size: 12px; }
+}
+
+/* ══════════════════════════════════════════════════════════════
+   증여세 (2026-11) — 관계 선택·금액 프리셋·영수증·네 가지 카드
+   ══════════════════════════════════════════════════════════════ */
+
+.tabs.tabs-2 { grid-template-columns: repeat(2, 1fr); }
+
+/* ── 관계 선택 ─────────────────────────────────────────── */
+.pick {
+  appearance: none; width: 100%; min-width: 0;
+  border: 1px solid var(--line); border-radius: var(--radius-sm);
+  background-color: #f8fafc;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath fill='%2363758c' d='M0 0h10L5 6z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  font-family: inherit; font-size: 14px; font-weight: 700; color: var(--navy);
+  padding: 12px 32px 12px 12px; letter-spacing: -0.02em;
+  transition: border-color .15s ease, background .15s ease, box-shadow .15s ease;
+}
+.pick:focus { outline: none; border-color: var(--blue); background-color: #fff; box-shadow: 0 0 0 3px rgba(31, 111, 235, .12); }
+
+/* ── 입력 단위 전환 ────────────────────────────────────── */
+.amount-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.seg-xs { display: flex; gap: 3px; flex: none; background: #e8edf5; border-radius: 9px; padding: 3px; }
+.seg-xs button {
+  appearance: none; border: 0; background: transparent; font-family: inherit;
+  font-size: 11.5px; font-weight: 700; color: var(--ink-2); letter-spacing: -0.02em;
+  padding: 6px 11px; border-radius: 7px; cursor: pointer;
+  transition: background .15s ease, color .15s ease, box-shadow .15s ease;
+}
+.seg-xs button.is-on { background: #fff; color: var(--navy); box-shadow: 0 1px 3px rgba(16, 38, 68, .14); }
+.seg-xs button:focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; }
+
+/* ── 금액 프리셋 ───────────────────────────────────────── */
+.presets { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+.preset {
+  appearance: none; border: 1px solid var(--line); background: #fff;
+  font-family: inherit; font-size: 11.8px; font-weight: 700; color: var(--ink-2);
+  padding: 6px 12px; border-radius: 999px; cursor: pointer; letter-spacing: -0.02em;
+  transition: border-color .12s ease, color .12s ease, background .12s ease;
+}
+.preset:hover { border-color: #c8d5e6; color: var(--navy); background: #fbfcfe; }
+.preset:active { transform: translateY(1px); }
+.preset:focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; }
+
+/* ── 체크박스 줄 보강 ──────────────────────────────────── */
+.check b { color: var(--navy); }
+.check em { display: block; margin-top: 1px; font-style: normal; font-weight: 500; font-size: 11.5px; color: var(--muted); line-height: 1.45; }
+.check.is-off { opacity: .45; }
+.check.is-off span { cursor: not-allowed; }
+
+/* ── 세액 계산 영수증 ──────────────────────────────────── */
+.receipt { width: 100%; border-collapse: collapse; font-size: 12.5px; margin-top: 2px; }
+.receipt th, .receipt td { padding: 9px 2px; border-bottom: 1px dashed var(--line); vertical-align: top; }
+.receipt th { text-align: left; font-weight: 600; color: var(--ink-2); }
+.receipt th em { display: block; margin-top: 1px; font-style: normal; font-size: 10.5px; font-weight: 500; color: var(--muted); line-height: 1.45; }
+.receipt td { text-align: right; font-weight: 700; color: var(--navy); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.receipt tr.is-total th, .receipt tr.is-total td {
+  border-top: 1.5px solid var(--navy); border-bottom: 0; padding-top: 11px;
+  font-size: 13.5px; font-weight: 800; color: var(--navy);
+}
+
+/* ── 네 가지 카드 ──────────────────────────────────────── */
+.gcards { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; margin-top: 12px; }
+.gcard {
+  border: 1px solid var(--line); border-radius: 13px; padding: 11px 12px; background: #fbfcfe;
+  transition: background .15s ease, border-color .15s ease;
+}
+.gcard.is-on { background: var(--blue-050); border-color: #cfe0ff; }
+.gc-tag {
+  display: inline-block; margin-bottom: 6px; padding: 2px 7px; border-radius: 999px;
+  background: #eef2f8; color: var(--muted); font-size: 10px; font-weight: 800;
+}
+.gcard.is-on .gc-tag { background: #fff; color: var(--blue-dark); }
+.gcard h4 { margin: 0 0 4px; font-size: 12.8px; line-height: 1.3; color: var(--navy); letter-spacing: -0.02em; }
+.gcard p { margin: 0; font-size: 11.3px; color: var(--muted); line-height: 1.55; }
+.gcard .gc-line { margin: 7px 0 0; font-size: 11.3px; font-weight: 800; color: var(--ink-2); font-variant-numeric: tabular-nums; }
+.gcard.is-on .gc-line { color: var(--blue-dark); }
+
+#pg-gift .hint b, #pg-spouse .hint b { color: var(--ink-2); }
+#pg-spouse .field { margin-top: 0; }
+
+@media (max-width: 420px) {
+  .gcard { padding: 10px; }
+  .gcard h4 { font-size: 12.2px; }
+  .preset { padding: 6px 10px; }
+  .receipt { font-size: 12px; }
 }
