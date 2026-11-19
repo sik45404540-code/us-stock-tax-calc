@@ -8,6 +8,7 @@ import {
   DEDUCTION,
 } from '../src/tax.js';
 import { mountCsvTab } from './csv.js';
+import { mountCsvGuide } from './guide.js';
 /* requiredLossForZero는 화면에서 직접 쓰지 않고 harvestPlan 안에서 쓰인다 */
 
 const STORE_KEY = 'stocktax.v1';
@@ -557,4 +558,5 @@ syncTopbarHeight();
 window.addEventListener('load', syncTopbarHeight);
 
 /* ── ④ CSV 불러오기 ─────────────────────────────────── */
+mountCsvGuide();
 mountCsvTab({ setInput, showTab });

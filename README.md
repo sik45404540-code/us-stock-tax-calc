@@ -11,7 +11,7 @@
 
 | 페이지 | 계산기 | 핵심 |
 | --- | --- | --- |
-| `index.html` | 미국주식 양도세 | 실현손익 → 250만 원 공제 → 22%(소득세 20% + 지방세 2%). 세금 0원이 되는 손실 매도 주수 역산, 종목 장부, 증권사 CSV 자동 집계 |
+| `index.html` | 미국주식 양도세 | 실현손익 → 250만 원 공제 → 22%(소득세 20% + 지방세 2%). 세금 0원이 되는 손실 매도 주수 역산, 종목 장부, 증권사 CSV 자동 집계(6개 증권사 CSV 받는 법 가이드 포함) |
 | `dividend.html` | 배당소득세 · 금융소득 종합과세 | 국내 배당·이자 15.4%, 미국 배당 현지 15%, 금융소득 2,000만 원 초과 시 비교과세(소득세법 제62조)·외국납부세액공제·건강보험 피부양자 위험 |
 | `isa.html` | ISA 절세 | 일반형 200만 / 서민·농어민형 400만 비과세, 초과분 9.9%, 손익통산, 납입한도, 만기 연금 전환 세액공제 |
 | `fee.html` | 수수료 · 환전우대 | 두 계좌의 왕복 거래비용(매수·매도 수수료 + 환전 스프레드×우대율), 실수령 차이, 손익분기 수익률 |
@@ -61,6 +61,7 @@
 - **통화**: 머리글·값에 `$`/`USD`/`달러`가 있으면 달러로 보고 환율 입력칸으로 원화 환산(행별 환율 컬럼이 있으면 그 값 우선). 원화 컬럼만 있으면 환율칸은 숨김
 - **수수료 처리**: 기본은 필요경비로 더하고, 손익에 이미 반영된 파일이면 체크를 풀어 이중 차감을 막음
 - 파일은 `FileReader`(arrayBuffer)로 브라우저 안에서만 읽고 전송·저장하지 않음
+- **증권사별 CSV 받는 법**: 업로드 영역 위 `? 증권사별 CSV 받는 법` 토글(`<details>`, 기본 닫힘)을 누르면 키움·신한·삼성·NH·토스·미래에셋 6개 증권사 탭이 펼쳐집니다. 메뉴 경로·HTS 조회 번호(`[3141]` `[7880]` `[6067]` `[9467]` `[9468]`)와 `CSV(쉼표로 분리)` 저장 순서를 안내합니다. 자바스크립트가 없어도 토글은 열리고 닫히며, 390px에서는 3열×2줄로 접혀 이름이 잘리지 않습니다
 
 ### 수수료
 - 매수 환전 = 투자금 × 스프레드 × (1 − 우대율), 매수 수수료 = 환전금액 × 수수료율
@@ -70,7 +71,7 @@
 ## 검증
 
 ```bash
-node --test tests/          # 80개 테스트 전부 통과
+node --test tests/          # 85개 테스트 전부 통과
 ```
 
 - `tests/tax.test.js` — 양도세·역산·장부·연말 마감 19건
@@ -78,6 +79,7 @@ node --test tests/          # 80개 테스트 전부 통과
 - `tests/isa.test.js` — 비과세·분리과세·손익통산·한도 경고·연금 전환 9건
 - `tests/fee.test.js` — 환전우대·왕복비용·손익분기·계좌 비교 6건
 - `tests/csv.test.js` — 인코딩(UTF-8·BOM·CP949·UTF-16LE)·구분자·머리글 탐색·자동 매핑·숫자 파싱·집계·환율 환산·샘플 끝단 검증 34건
+- `tests/guide.test.js` — 「증권사별 CSV 받는 법」 토글 위치·초기 닫힘·6개 탭/패널 짝·핵심 메뉴 경로 5건
 
 모바일(390×844) 실입력 점검:
 
@@ -92,6 +94,13 @@ CSV 탭(4개 탭 폭·보호 배지·샘플 CP949 인식·컬럼 매핑·드래�
 ```bash
 python3 tools/csv-check.py                      # 로컬 서버를 직접 띄워 점검
 python3 tools/csv-check.py https://taxmoa.com live
+```
+
+증권사별 CSV 가이드 토글(위치·열고 닫기·6개 탭 전환·390px 잘림/가로스크롤) 점검:
+
+```bash
+python3 tools/guide-check.py
+python3 tools/guide-check.py https://taxmoa.com live
 ```
 
 Playwright headless Chromium으로 6개 페이지에 값을 입력하고 화면 숫자를 확인한 뒤 `downloads/us-stock-tax/`에 스크린샷을 남깁니다(27개 확인 항목).
@@ -110,6 +119,7 @@ src/isa.js               ISA 코어
 src/fee.js               수수료 코어
 assets/app.js            양도세 화면 로직
 assets/csv.js            CSV 탭 화면 로직(파일 읽기·매핑·표시·계산기 연결)
+assets/guide.js          증권사별 CSV 가이드 탭 전환(바깥 토글은 <details>)
 src/csv.js               CSV 파서 코어(인코딩·구분자·머리글·매핑·집계)
 src/csv-sample.js        샘플 CSV(CP949) Base64
 assets/dividend.js       배당 화면 로직
@@ -119,9 +129,10 @@ assets/style.css         스타일(모바일 390px 우선, 허브 내비게이�
 assets/og-cover.png      OG 이미지 1200×630 (TaxPing)
 assets/favicon.svg, apple-touch-icon.png
 robots.txt / sitemap.xml (https://taxmoa.com 기준)
-tests/*.test.js          Node 단위 테스트 80개
+tests/*.test.js          Node 단위 테스트 85개
 tools/mobile-check.py    Playwright 모바일 점검
 tools/csv-check.py       Playwright CSV 탭 점검
+tools/guide-check.py     Playwright CSV 가이드 토글 점검
 tools/make-assets.py     OG·아이콘 생성
 preview-390x844.html     검수용 390×844 프리뷰(noindex)
 ```
@@ -132,7 +143,7 @@ preview-390x844.html     검수용 390×844 프리뷰(noindex)
 
 - Cloudflare Pages: 프로젝트 `us-stock-tax-calc`, 프레임워크 없음, 빌드 명령 없음, 출력 디렉터리 `/`
 - 커스텀 도메인 `taxmoa.com` / `www.taxmoa.com` 연결
-- 자산 캐시: `assets/style.css?v=5`·`assets/*.js?v=5` — 파일을 고치면 N을 올려야 방문자 브라우저에 바로 반영됩니다.
+- 자산 캐시: `assets/style.css?v=6`·`assets/*.js?v=6` — 파일을 고치면 N을 올려야 방문자 브라우저에 바로 반영됩니다.
 - **주소 표기**: Cloudflare Pages는 `dividend.html`을 `/dividend`로 308 리다이렉트합니다. 그래서 canonical·og:url·사이트맵·내부 링크는 확장자 없는 주소(`https://taxmoa.com/dividend`)를 씁니다.
 
 ## 알아 둘 것

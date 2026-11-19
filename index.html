@@ -25,7 +25,7 @@
 <meta name="twitter:image" content="https://taxmoa.com/assets/og-cover.png" />
 <link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png" />
-<link rel="stylesheet" href="assets/style.css?v=5" />
+<link rel="stylesheet" href="assets/style.css?v=6" />
 
 <script type="application/ld+json">
 {
@@ -287,6 +287,77 @@
       <div class="card">
         <h2 class="card-title">증권사 CSV로 한 번에 채우기</h2>
         <p class="card-sub">키움·삼성·NH·미래에셋·한국투자·토스 등에서 내려받은 <b>해외주식 실현손익</b> 파일을 그대로 올리세요. 인코딩(EUC-KR·CP949·UTF-8)과 컬럼 이름이 달라도 알아서 맞추고, 실현 이익·손실·수수료를 자동으로 나눕니다.</p>
+
+        <details class="csv-help" id="csv-help">
+          <summary class="csv-help-btn">
+            <span class="ch-ico" aria-hidden="true">?</span>
+            <span class="ch-label">증권사별 CSV 받는 법</span>
+            <span class="ch-note">6개 증권사</span>
+            <span class="ch-arrow" aria-hidden="true"></span>
+          </summary>
+          <div class="csv-help-body">
+            <div class="broker-tabs" role="tablist" aria-label="증권사 선택">
+              <button class="broker-tab is-on" type="button" role="tab" id="btab-kiwoom" aria-selected="true" aria-controls="bpanel-kiwoom" data-broker="kiwoom">키움증권</button>
+              <button class="broker-tab" type="button" role="tab" id="btab-shinhan" aria-selected="false" aria-controls="bpanel-shinhan" data-broker="shinhan" tabindex="-1">신한투자증권</button>
+              <button class="broker-tab" type="button" role="tab" id="btab-samsung" aria-selected="false" aria-controls="bpanel-samsung" data-broker="samsung" tabindex="-1">삼성증권</button>
+              <button class="broker-tab" type="button" role="tab" id="btab-nh" aria-selected="false" aria-controls="bpanel-nh" data-broker="nh" tabindex="-1">NH투자증권</button>
+              <button class="broker-tab" type="button" role="tab" id="btab-toss" aria-selected="false" aria-controls="bpanel-toss" data-broker="toss" tabindex="-1">토스증권</button>
+              <button class="broker-tab" type="button" role="tab" id="btab-mirae" aria-selected="false" aria-controls="bpanel-mirae" data-broker="mirae" tabindex="-1">미래에셋증권</button>
+            </div>
+
+            <div class="broker-panel" role="tabpanel" id="bpanel-kiwoom" aria-labelledby="btab-kiwoom">
+              <ol class="steps">
+                <li>PC <b>영웅문G</b>에서 <b>[3141] 해외주식 양도소득세 조회</b>를 엽니다. <em>소수점 매수분은 [7880]</em></li>
+                <li>결과 표에서 <b>우클릭 → Excel로 저장</b>을 고릅니다.</li>
+                <li>저장한 엑셀에서 <b>다른 이름으로 저장 → CSV(쉼표로 분리)</b>.</li>
+                <li>다른 길은 PC 홈페이지 <b>뱅킹/업무 › 서류발급/조회 › 해외주식 양도세 계산내역</b>입니다.</li>
+              </ol>
+            </div>
+
+            <div class="broker-panel" role="tabpanel" id="bpanel-shinhan" aria-labelledby="btab-shinhan" hidden>
+              <ol class="steps">
+                <li>PC 홈페이지에서 <b>트레이딩 › 해외주식 › 업무안내 › 세금안내/신고대행 서비스 신청 › 신고관련 보조자료</b>로 들어갑니다.</li>
+                <li><b>취득일자별 내역</b>을 엑셀로 내려받습니다.</li>
+                <li>엑셀에서 <b>다른 이름으로 저장 → CSV(쉼표로 분리)</b>.</li>
+              </ol>
+            </div>
+
+            <div class="broker-panel" role="tabpanel" id="bpanel-samsung" aria-labelledby="btab-samsung" hidden>
+              <ol class="steps">
+                <li>PC 홈페이지 <b>트레이딩 › 해외주식 › 해외주식양도세조회</b>를 엽니다.</li>
+                <li><b>양도일자별 세부내역</b> 표를 복사해 엑셀에 붙여넣습니다. <em>HTS에서는 표를 우클릭해 ‘엑셀로 보내기’</em></li>
+                <li>엑셀에서 <b>다른 이름으로 저장 → CSV(쉼표로 분리)</b>.</li>
+              </ol>
+            </div>
+
+            <div class="broker-panel" role="tabpanel" id="bpanel-nh" aria-labelledby="btab-nh" hidden>
+              <ol class="steps">
+                <li>HTS에서 <b>해외주식 › 해외주식 세금/권리 › [6067] 양도소득 과세자료 조회/출력</b>을 엽니다.</li>
+                <li>또는 홈페이지 <b>뱅킹/계좌정보 › 서비스신청 › 증명서 발급신청 › 해외주식 양도소득세</b>에서 내려받습니다.</li>
+                <li>엑셀에서 정리한 뒤 <b>다른 이름으로 저장 → CSV(쉼표로 분리)</b>.</li>
+              </ol>
+            </div>
+
+            <div class="broker-panel" role="tabpanel" id="bpanel-toss" aria-labelledby="btab-toss" hidden>
+              <ol class="steps">
+                <li>토스 앱에서 <b>주식 → ‘양도소득세’ 검색</b>.</li>
+                <li><b>해외주식 양도소득세 증명서</b>를 발급합니다. <em>PDF 또는 엑셀 선택</em></li>
+                <li>엑셀로 받았으면 바로 올리고, PDF라면 표를 엑셀에 옮겨 <b>CSV(쉼표로 분리)</b>로 저장합니다.</li>
+              </ol>
+            </div>
+
+            <div class="broker-panel" role="tabpanel" id="bpanel-mirae" aria-labelledby="btab-mirae" hidden>
+              <ol class="steps">
+                <li>카이로스 HTS에서 <b>[9467]</b>로 조회하고 <b>[9468]</b>로 출력합니다.</li>
+                <li>또는 PC 홈페이지 <b>서비스 신청/관리 › 증명서 발급/조회 › 해외주식 양도소득세</b>.</li>
+                <li>엑셀에서 <b>다른 이름으로 저장 → CSV(쉼표로 분리)</b>.</li>
+              </ol>
+            </div>
+
+            <p class="csv-tip">💡 <b>.xlsx · .xls</b> 파일은 엑셀에서 <b>다른 이름으로 저장 → CSV(쉼표로 분리)</b> 후 올리면 바로 인식됩니다. 증권사 화면 이름은 앱·HTS 버전에 따라 조금 다를 수 있습니다.</p>
+          </div>
+        </details>
+
         <label class="drop" id="csv-drop" for="csv-file" tabindex="0" aria-label="CSV 파일 선택 또는 끌어다 놓기">
           <span class="drop-ico" aria-hidden="true">📄</span>
           <span class="drop-main">파일을 끌어다 놓거나 눌러서 선택</span>
@@ -479,6 +550,6 @@
   </div>
 </footer>
 
-<script type="module" src="assets/app.js?v=5"></script>
+<script type="module" src="assets/app.js?v=6"></script>
 </body>
 </html>
