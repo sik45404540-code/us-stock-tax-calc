@@ -150,7 +150,10 @@ function renderResults() {
   $('out-base').textContent = won(r.taxableBase);
   $('out-income').textContent = won(r.incomeTax);
   $('out-local').textContent = won(r.localTax);
-  $('out-room').textContent = won(r.deductionLeft);
+  $('out-room').textContent = r.deductionLeft > 0 ? won(r.deductionLeft) : '소진';
+  $('room-help').textContent = r.deductionLeft > 0
+    ? '이 금액만큼 더 이익을 실현해도 세금은 0원입니다.'
+    : '기본공제 250만 원을 모두 사용했습니다. 초과분부터 22%가 붙습니다.';
 
   const usedPct = Math.min(100, Math.round((Math.max(0, r.netGain) / DEDUCTION) * 100));
   $('meter-fill').style.width = `${usedPct}%`;

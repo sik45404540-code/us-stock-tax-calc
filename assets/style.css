@@ -78,7 +78,7 @@ a { color: var(--blue-dark); }
 .topnav a:hover { background: var(--blue-050); color: var(--blue-dark); }
 
 /* ── 히어로 ───────────────────────────────────────── */
-.hero { padding: 26px 0 20px; background: linear-gradient(180deg, #ffffff 0%, var(--bg) 100%); border-bottom: 1px solid var(--line-2); }
+.hero { padding: 20px 0 16px; background: linear-gradient(180deg, #ffffff 0%, var(--bg) 100%); border-bottom: 1px solid var(--line-2); }
 .eyebrow {
   display: inline-block; margin: 0 0 10px; padding: 5px 10px;
   background: var(--blue-050); color: var(--blue-dark);
@@ -88,10 +88,10 @@ a { color: var(--blue-dark); }
   margin: 0 0 10px; font-size: clamp(25px, 7.4vw, 38px); line-height: 1.22;
   letter-spacing: -0.035em; color: var(--navy);
 }
-.lede { margin: 0; color: var(--ink-2); font-size: 14.5px; line-height: 1.68; }
+.lede { margin: 0; color: var(--ink-2); font-size: 14px; line-height: 1.62; }
 .lede b { color: var(--navy); }
 .deadline {
-  display: flex; align-items: center; gap: 8px; margin-top: 16px;
+  display: flex; align-items: center; gap: 8px; margin-top: 12px;
   background: #fff; border: 1px solid var(--warn-line); border-radius: 12px;
   padding: 10px 13px; font-size: 13px; color: var(--warn-ink);
 }
@@ -105,7 +105,7 @@ a { color: var(--blue-dark); }
 /* ── 탭 ───────────────────────────────────────────── */
 .tabs {
   display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px;
-  margin: 16px 0 14px; padding: 4px;
+  margin: 14px 0 12px; padding: 4px;
   background: #e8edf5; border-radius: 14px;
   position: sticky; top: 58px; z-index: 20;
 }
