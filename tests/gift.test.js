@@ -180,6 +180,17 @@ test('미성년자라도 20억 원 이하면 할증은 30%다', () => {
   assert.equal(r.skipRate, 0.3);
 });
 
+test('20억 판단은 10년 합산이 아니라 이번 증여재산가액으로 한다', () => {
+  const r = giftTax({
+    amount: 1_500_000_000,
+    relation: 'parentMinor',
+    priorGift: 600_000_000,
+    generationSkip: true,
+  });
+  assert.equal(r.taxableValue, 2_100_000_000);
+  assert.equal(r.skipRate, 0.3);
+});
+
 /* ── 세율 구간 ────────────────────────────────────────── */
 
 test('세율 구간과 누진공제가 법정 표와 같다', () => {

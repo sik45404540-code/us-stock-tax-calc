@@ -8,7 +8,7 @@
  *  - 같은 법 제55조 (과세표준, 과세표준 50만원 미만이면 부과하지 않음)
  *  - 같은 법 제56조·제26조 (세율 10·20·30·40·50% + 누진공제)
  *  - 같은 법 제57조 (증여자의 자녀가 아닌 직계비속에게 증여 시 산출세액의 30% 가산,
- *    미성년자이고 증여재산가액 20억원 초과 시 40%)
+ *    미성년자이고 이번 증여재산가액이 20억원 초과 시 40%)
  *  - 같은 법 제58조 (기납부세액 공제), 제69조 (신고세액공제 3%)
  *  - 소득세법 제97조의2 (2025.1.1. 이후 증여분 주식은 증여일부터 1년 내 양도 시 이월과세)
  */
@@ -114,8 +114,9 @@ export function giftTax(input = {}) {
     : taxBase * bracket.rate - bracket.progressive;
   const computedTax = roundWon(Math.max(0, computedRaw));
 
+  // 제57조: 미성년자이면서 '증여재산가액'이 20억 원을 초과할 때만 40%
   const skipRate = generationSkip
-    ? (minor && taxableValue > GIFT.generationSkipMinorThreshold
+    ? (minor && amount > GIFT.generationSkipMinorThreshold
       ? GIFT.generationSkipMinorRate
       : GIFT.generationSkipRate)
     : 0;

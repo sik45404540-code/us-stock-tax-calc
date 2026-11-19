@@ -83,14 +83,14 @@
 ## 검증
 
 ```bash
-node --test tests/          # 111개 테스트 전부 통과
+node --test tests/          # 112개 테스트 전부 통과
 ```
 
 - `tests/tax.test.js` — 양도세·역산·장부·연말 마감 19건
 - `tests/dividend.test.js` — 15.4%/15%, 비교과세 ①②, 외국납부세액공제 한도, 피부양자, 세율표 12건
 - `tests/isa.test.js` — 비과세·분리과세·손익통산·한도 경고·연금 전환 9건
 - `tests/fee.test.js` — 환전우대·왕복비용·손익분기·계좌 비교 6건
-- `tests/gift.test.js` — 관계별 공제·혼인·출산·과세최저한·10년 합산·세대생략 할증·세율 구간·배우자 증여 비교·이월과세 26건
+- `tests/gift.test.js` — 관계별 공제·혼인·출산·과세최저한·10년 합산·세대생략 할증·세율 구간·배우자 증여 비교·이월과세 27건
 - `tests/csv.test.js` — 인코딩(UTF-8·BOM·CP949·UTF-16LE)·구분자·머리글 탐색·자동 매핑·숫자 파싱·집계·환율 환산·샘플 끝단 검증 34건
 - `tests/guide.test.js` — 「증권사별 CSV 받는 법」 토글 위치·초기 닫힘·6개 탭/패널 짝·핵심 메뉴 경로 5건
 
@@ -144,7 +144,7 @@ assets/style.css         스타일(모바일 390px 우선, 허브 내비게이�
 assets/og-cover.png      OG 이미지 1200×630 (TaxPing)
 assets/favicon.svg, apple-touch-icon.png
 robots.txt / sitemap.xml (https://taxmoa.com 기준)
-tests/*.test.js          Node 단위 테스트 111개
+tests/*.test.js          Node 단위 테스트 112개
 tools/mobile-check.py    Playwright 모바일 점검
 tools/csv-check.py       Playwright CSV 탭 점검
 tools/guide-check.py     Playwright CSV 가이드 토글 점검
