@@ -249,7 +249,43 @@ with sync_playwright() as p:
     page.goto(f"{BASE}/", wait_until="networkidle")
     check("index.12월30일", text(page, "#guide"), "2027년 귀속 가능성 높음 · 비권장")
 
-    # ── 6. 상단 내비게이션(6개) ───────────────────────
+    # ── 5. 연금저축·IRP 세액공제 ─────────────────────
+    page.goto(f"{BASE}/pension", wait_until="networkidle")
+    check("pension.h1", text(page, "h1"), "연금저축·IRP 세액공제 계산기")
+    check("pension.배지", text(page, ".badge-row"), "2026년 귀속 기준 · 참고용")
+    check("pension.예시공제액", text(page, "#out-credit"), "990,000")
+    check("pension.예시공제대상", text(page, "#out-base"), "6,000,000원")
+    check("pension.소득세", text(page, "#out-income-tax"), "900,000원")
+    check("pension.지방세", text(page, "#out-local-tax"), "90,000원")
+    check("pension.고지", text(page, "#out-caveat"), "결정세액 한도")
+    check("pension.표연금저축", text(page, "#bd-pension-ok"), "4,000,000원")
+    check("pension.ISA카드", text(page, "#isa-card"), "60일")
+    shot(page, "pension")
+
+    type_money(page, "#in-income", 70_000_000)
+    check("pension.12퍼센트", text(page, "#out-rate"), "12%")
+    check("pension.12퍼센트공제액", text(page, "#out-credit"), "792,000")
+    type_money(page, "#in-income", 50_000_000)
+
+    type_money(page, "#in-pension", 9_000_000)
+    check("pension.한도초과중립안내", text(page, "#flags"), "과세이연 혜택은 유지")
+    check("pension.다음해전환", text(page, "#flags"), "다음 해 이후 전환 신청")
+
+    type_money(page, "#in-pension", 6_000_000)
+    type_money(page, "#in-irp", 3_000_000)
+    type_money(page, "#in-isa", 30_000_000)
+    check("pension.ISA최대공제대상", text(page, "#out-base"), "12,000,000원")
+    check("pension.ISA최대공제액", text(page, "#out-credit"), "1,980,000")
+    check("pension.ISA공제표", text(page, "#bd-isa-ok"), "3,000,000원")
+    scroll_to(page, ".card.mini")
+    shot(page, "pension-isa")
+
+    page.click("button[data-income='total']")
+    page.wait_for_timeout(200)
+    type_money(page, "#in-income", 45_100_000)
+    check("pension.종합소득기준", text(page, "#out-rate"), "12%")
+
+    # ── 6. 상단 내비게이션(7개) ───────────────────────
     page.goto(f"{BASE}/gift", wait_until="networkidle")
     nav = page.evaluate(
         """() => {
@@ -263,7 +299,7 @@ with sync_playwright() as p:
             };
         }"""
     )
-    check("nav.6개항목", nav["items"], "양도세,배당세,ISA,수수료,증여세,소개")
+    check("nav.7개항목", nav["items"], "양도세,배당세,ISA,연금·IRP,수수료,증여세,소개")
     check("nav.가로스크롤없음", str(nav["sw"] <= nav["cw"] + 1), "True")
     check("nav.한줄", str(nav["rows"] == 1), "True")
     check("nav.본문넘침없음", str(nav["doc"] <= nav["win"] + 1), "True")
@@ -284,6 +320,7 @@ with sync_playwright() as p:
     for href, want in [
         ("a[href='dividend']", "dividend"),
         ("a[href='isa']", "isa"),
+        ("a[href='pension']", "pension"),
         ("a[href='fee']", "fee"),
         ("a[href='gift']", "gift"),
         ("a[href='about']", "about"),
