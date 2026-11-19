@@ -25,7 +25,7 @@
 <meta name="twitter:image" content="https://taxmoa.com/assets/og-cover.png" />
 <link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png" />
-<link rel="stylesheet" href="assets/style.css?v=4" />
+<link rel="stylesheet" href="assets/style.css?v=5" />
 
 <script type="application/ld+json">
 {
@@ -44,6 +44,7 @@
         "실현 손익 기반 양도소득세 계산",
         "세금 0원 역산 및 손실 매도 주수 계산",
         "종목별 손익통산 장부",
+        "증권사 실현손익 CSV 자동 집계(EUC-KR·CP949 인식)",
         "연말 결제일(T+1) 마감 안내"
       ]
     },
@@ -142,6 +143,7 @@
       <button class="tab is-active" role="tab" id="tab-calc" aria-selected="true" aria-controls="panel-calc" data-tab="calc">세액 계산</button>
       <button class="tab" role="tab" id="tab-plan" aria-selected="false" aria-controls="panel-plan" data-tab="plan">절세 역산</button>
       <button class="tab" role="tab" id="tab-ledger" aria-selected="false" aria-controls="panel-ledger" data-tab="ledger">종목 장부</button>
+      <button class="tab" role="tab" id="tab-csv" aria-selected="false" aria-controls="panel-csv" data-tab="csv">CSV 불러오기</button>
     </div>
 
     <!-- ① 세액 계산 -->
@@ -274,6 +276,74 @@
       </div>
       <p class="sec-note">배당금에도 세금이 붙습니다. <a href="dividend">배당소득세 계산기</a>에서 금융소득 2,000만 원 종합과세 여부를 확인하세요.</p>
     </section>
+
+    <!-- ④ CSV 불러오기 -->
+    <section class="panel" id="panel-csv" role="tabpanel" aria-labelledby="tab-csv" hidden>
+      <p class="privacy-badge">
+        <span class="pb-ico" aria-hidden="true">🔒</span>
+        <span><b>내 기기 브라우저 안에서만 계산되며 서버로 전송되지 않습니다.</b> 올린 파일은 어디에도 저장되지 않고, 탭을 닫으면 사라집니다.</span>
+      </p>
+
+      <div class="card">
+        <h2 class="card-title">증권사 CSV로 한 번에 채우기</h2>
+        <p class="card-sub">키움·삼성·NH·미래에셋·한국투자·토스 등에서 내려받은 <b>해외주식 실현손익</b> 파일을 그대로 올리세요. 인코딩(EUC-KR·CP949·UTF-8)과 컬럼 이름이 달라도 알아서 맞추고, 실현 이익·손실·수수료를 자동으로 나눕니다.</p>
+        <label class="drop" id="csv-drop" for="csv-file" tabindex="0" aria-label="CSV 파일 선택 또는 끌어다 놓기">
+          <span class="drop-ico" aria-hidden="true">📄</span>
+          <span class="drop-main">파일을 끌어다 놓거나 눌러서 선택</span>
+          <span class="drop-sub">.csv · .tsv · .txt · 엑셀 “CSV로 저장” 파일</span>
+          <input type="file" id="csv-file" accept=".csv,.tsv,.txt,text/csv,text/plain" />
+        </label>
+        <div class="drop-or"><span>파일이 없다면</span></div>
+        <button class="btn ghost full" id="csv-sample" type="button">🧪 샘플 CSV 체험하기</button>
+        <p class="hint" id="csv-status" role="status">증권사 앱 → 해외주식 실현손익 → 엑셀(CSV) 저장 → 위에 올리기 순서입니다.</p>
+      </div>
+
+      <div id="csv-result" hidden>
+        <div class="card result">
+          <p class="result-label">CSV에서 계산한 예상 납부 세액</p>
+          <p class="result-value"><span id="csv-total">0</span><span class="result-unit">원</span></p>
+          <p class="result-note" id="csv-note"></p>
+          <dl class="kv">
+            <div class="kv-row"><dt>총 실현이익</dt><dd id="csv-profit">0원</dd></div>
+            <div class="kv-row"><dt>총 실현손실</dt><dd id="csv-loss">0원</dd></div>
+            <div class="kv-row"><dt>필요경비<em>수수료·제비용</em></dt><dd id="csv-fee">0원</dd></div>
+            <div class="kv-row strong"><dt>과세표준</dt><dd id="csv-base">0원</dd></div>
+          </dl>
+        </div>
+
+        <div class="card">
+          <div class="card-head">
+            <h2 class="card-title">종목별 요약</h2>
+            <span class="pill" id="csv-rows">0건</span>
+          </div>
+          <p class="card-sub">많이 번 종목부터 순서대로 보여 줍니다.</p>
+          <div class="csv-table-wrap">
+            <table class="cmp csv-table">
+              <thead><tr><th>종목</th><th>건수</th><th>손익</th></tr></thead>
+              <tbody id="csv-symbols"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="card">
+          <h2 class="card-title">컬럼 매핑</h2>
+          <p class="card-sub">자동으로 맞춘 결과입니다. 숫자가 이상하면 오른쪽 칸에서 직접 바꾸세요.</p>
+          <div class="map-grid" id="csv-map"></div>
+          <label class="check"><input type="checkbox" id="csv-fee-toggle" checked /><span>수수료를 필요경비로 더하기</span></label>
+          <p class="hint">증권사 손익에 수수료가 이미 반영돼 있다면 체크를 풀어 주세요(두 번 차감 방지).</p>
+          <label class="field" id="csv-fx-field" hidden>
+            <span class="field-label">환율(원/$)<em>달러 금액을 원화로 환산</em></span>
+            <span class="money"><input type="text" id="csv-fx" inputmode="numeric" autocomplete="off" placeholder="1,380" /><span class="unit">원</span></span>
+          </label>
+          <div class="flags" id="csv-warnings"></div>
+        </div>
+
+        <div class="btn-row">
+          <button class="btn" id="csv-apply" type="button">세액 계산에 바로 반영하기</button>
+          <button class="btn ghost" id="csv-reset" type="button">다른 파일</button>
+        </div>
+      </div>
+    </section>
   </div>
 
   <!-- 해설 -->
@@ -315,7 +385,7 @@
 
     <h3>6. 12월 절세 체크리스트</h3>
     <ol class="steps">
-      <li>증권사 앱에서 <b>올해 해외주식 실현손익(원화)</b>을 확인하고 ‘세액 계산’ 탭에 입력합니다.</li>
+      <li>증권사 앱에서 <b>올해 해외주식 실현손익(원화)</b>을 확인하고 ‘세액 계산’ 탭에 입력합니다. 증권사에서 CSV로 내려받았다면 <a href="#tab-csv" data-goto="csv">CSV 불러오기</a>에 올려 자동으로 채울 수 있습니다.</li>
       <li>예상 세액이 0원이 아니면, ‘절세 역산’ 탭에 <b>평가손실 종목</b>을 넣어 필요한 매도 주수를 확인합니다.</li>
       <li>증권사의 <b>연말 최종 매매일 공지</b>를 확인합니다(2026년은 12월 29일이 안전선).</li>
       <li>매도 후에는 <b>체결이 아니라 결제</b>가 올해 안에 끝났는지 증권사 잔고·결제 내역으로 확인합니다.</li>
@@ -409,6 +479,6 @@
   </div>
 </footer>
 
-<script type="module" src="assets/app.js?v=4"></script>
+<script type="module" src="assets/app.js?v=5"></script>
 </body>
 </html>

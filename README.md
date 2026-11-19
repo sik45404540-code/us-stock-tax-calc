@@ -11,7 +11,7 @@
 
 | 페이지 | 계산기 | 핵심 |
 | --- | --- | --- |
-| `index.html` | 미국주식 양도세 | 실현손익 → 250만 원 공제 → 22%(소득세 20% + 지방세 2%). 세금 0원이 되는 손실 매도 주수 역산, 종목 장부 |
+| `index.html` | 미국주식 양도세 | 실현손익 → 250만 원 공제 → 22%(소득세 20% + 지방세 2%). 세금 0원이 되는 손실 매도 주수 역산, 종목 장부, 증권사 CSV 자동 집계 |
 | `dividend.html` | 배당소득세 · 금융소득 종합과세 | 국내 배당·이자 15.4%, 미국 배당 현지 15%, 금융소득 2,000만 원 초과 시 비교과세(소득세법 제62조)·외국납부세액공제·건강보험 피부양자 위험 |
 | `isa.html` | ISA 절세 | 일반형 200만 / 서민·농어민형 400만 비과세, 초과분 9.9%, 손익통산, 납입한도, 만기 연금 전환 세액공제 |
 | `fee.html` | 수수료 · 환전우대 | 두 계좌의 왕복 거래비용(매수·매도 수수료 + 환전 스프레드×우대율), 실수령 차이, 손익분기 수익률 |
@@ -50,6 +50,18 @@
 - 계좌 내 손익통산 → 순수익 기준 과세(일반계좌 15.4%는 상품별 과세)
 - 만기 후 60일 내 연금계좌 전환: 전환금액 10%, 최대 300만 원 세액공제
 
+### 증권사 CSV 자동 집계 (`CSV 불러오기` 탭)
+증권사 앱에서 내려받은 해외주식 실현손익 파일을 그대로 올리면 실현이익·실현손실·필요경비를 나눠 계산하고, `세액 계산` 탭 입력값을 한 번에 채웁니다.
+
+- **인코딩 자동 판별**: UTF-8(BOM) → 실패하거나 깨지면 EUC-KR/CP949로 재디코딩. 엑셀이 저장한 UTF-16LE/BOM도 처리
+- **구분자 자동 판별**: 쉼표·탭·세미콜론·파이프 (줄마다 같은 개수가 나오는 쪽을 고름)
+- **머리글 자동 탐색**: 맨 위 `조회기간` 안내 줄·빈 줄을 건너뛰고 컬럼 이름 점수로 머리글 줄을 찾음. 맨 아래 `합계` 줄은 집계에서 제외
+- **컬럼 자동 매핑**: `종목명/종목/티커`, `실현손익/양도손익/매매손익/손익금액`, `매도금액/양도가액`, `매수금액/취득가액`, `수수료/제비용`, `수량/매도수량`과 영문 머리글. `평가손익`·`현재가`는 실현손익으로 쓰지 않음. 못 찾거나 틀리면 드롭다운으로 직접 지정
+- **숫자 파싱**: `1,234,567` `-500,000` `(500,000)` `△500,000` `1,234-` `$1,200` `1,234원`
+- **통화**: 머리글·값에 `$`/`USD`/`달러`가 있으면 달러로 보고 환율 입력칸으로 원화 환산(행별 환율 컬럼이 있으면 그 값 우선). 원화 컬럼만 있으면 환율칸은 숨김
+- **수수료 처리**: 기본은 필요경비로 더하고, 손익에 이미 반영된 파일이면 체크를 풀어 이중 차감을 막음
+- 파일은 `FileReader`(arrayBuffer)로 브라우저 안에서만 읽고 전송·저장하지 않음
+
 ### 수수료
 - 매수 환전 = 투자금 × 스프레드 × (1 − 우대율), 매수 수수료 = 환전금액 × 수수료율
 - 매도 수수료 = 매도금액 × 수수료율, 매도 환전 = (매도금 − 수수료) × 스프레드 × (1 − 우대율)
@@ -58,13 +70,14 @@
 ## 검증
 
 ```bash
-node --test tests/          # 46개 테스트 전부 통과
+node --test tests/          # 80개 테스트 전부 통과
 ```
 
 - `tests/tax.test.js` — 양도세·역산·장부·연말 마감 19건
 - `tests/dividend.test.js` — 15.4%/15%, 비교과세 ①②, 외국납부세액공제 한도, 피부양자, 세율표 12건
 - `tests/isa.test.js` — 비과세·분리과세·손익통산·한도 경고·연금 전환 9건
 - `tests/fee.test.js` — 환전우대·왕복비용·손익분기·계좌 비교 6건
+- `tests/csv.test.js` — 인코딩(UTF-8·BOM·CP949·UTF-16LE)·구분자·머리글 탐색·자동 매핑·숫자 파싱·집계·환율 환산·샘플 끝단 검증 34건
 
 모바일(390×844) 실입력 점검:
 
@@ -74,12 +87,19 @@ python3 tools/mobile-check.py http://127.0.0.1:4173 local
 python3 tools/mobile-check.py https://us-stock-tax-calc.pages.dev live
 ```
 
+CSV 탭(4개 탭 폭·보호 배지·샘플 CP949 인식·컬럼 매핑·드래그 앤 드롭·달러 환산·계산기 반영) 점검:
+
+```bash
+python3 tools/csv-check.py                      # 로컬 서버를 직접 띄워 점검
+python3 tools/csv-check.py https://taxmoa.com live
+```
+
 Playwright headless Chromium으로 6개 페이지에 값을 입력하고 화면 숫자를 확인한 뒤 `downloads/us-stock-tax/`에 스크린샷을 남깁니다(27개 확인 항목).
 
 ## 파일
 
 ```
-index.html               양도세 계산기(3탭) + 해설 + FAQ + 허브 카드
+index.html               양도세 계산기(4탭: 세액·역산·장부·CSV) + 해설 + FAQ + 허브 카드
 dividend.html            배당소득세·금융소득 종합과세
 isa.html                 ISA 절세
 fee.html                 수수료·환전우대 비교
@@ -89,6 +109,9 @@ src/dividend.js          배당·금융소득 코어
 src/isa.js               ISA 코어
 src/fee.js               수수료 코어
 assets/app.js            양도세 화면 로직
+assets/csv.js            CSV 탭 화면 로직(파일 읽기·매핑·표시·계산기 연결)
+src/csv.js               CSV 파서 코어(인코딩·구분자·머리글·매핑·집계)
+src/csv-sample.js        샘플 CSV(CP949) Base64
 assets/dividend.js       배당 화면 로직
 assets/isa.js            ISA 화면 로직
 assets/fee.js            수수료 화면 로직
@@ -96,8 +119,9 @@ assets/style.css         스타일(모바일 390px 우선, 허브 내비게이�
 assets/og-cover.png      OG 이미지 1200×630 (TaxPing)
 assets/favicon.svg, apple-touch-icon.png
 robots.txt / sitemap.xml (https://taxmoa.com 기준)
-tests/*.test.js          Node 단위 테스트 46개
+tests/*.test.js          Node 단위 테스트 80개
 tools/mobile-check.py    Playwright 모바일 점검
+tools/csv-check.py       Playwright CSV 탭 점검
 tools/make-assets.py     OG·아이콘 생성
 preview-390x844.html     검수용 390×844 프리뷰(noindex)
 ```
@@ -108,7 +132,7 @@ preview-390x844.html     검수용 390×844 프리뷰(noindex)
 
 - Cloudflare Pages: 프로젝트 `us-stock-tax-calc`, 프레임워크 없음, 빌드 명령 없음, 출력 디렉터리 `/`
 - 커스텀 도메인 `taxmoa.com` / `www.taxmoa.com` 연결
-- 자산 캐시: `assets/style.css?v=4`·`assets/*.js?v=4` — 파일을 고치면 N을 올려야 방문자 브라우저에 바로 반영됩니다.
+- 자산 캐시: `assets/style.css?v=5`·`assets/*.js?v=5` — 파일을 고치면 N을 올려야 방문자 브라우저에 바로 반영됩니다.
 - **주소 표기**: Cloudflare Pages는 `dividend.html`을 `/dividend`로 308 리다이렉트합니다. 그래서 canonical·og:url·사이트맵·내부 링크는 확장자 없는 주소(`https://taxmoa.com/dividend`)를 씁니다.
 
 ## 알아 둘 것

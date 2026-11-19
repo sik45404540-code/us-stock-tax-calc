@@ -7,6 +7,7 @@ import {
   daysBetween,
   DEDUCTION,
 } from '../src/tax.js';
+import { mountCsvTab } from './csv.js';
 /* requiredLossForZero는 화면에서 직접 쓰지 않고 harvestPlan 안에서 쓰인다 */
 
 const STORE_KEY = 'stocktax.v1';
@@ -71,6 +72,7 @@ const panels = {
   calc: $('panel-calc'),
   plan: $('panel-plan'),
   ledger: $('panel-ledger'),
+  csv: $('panel-csv'),
 };
 
 function showTab(name) {
@@ -553,3 +555,6 @@ renderLedger();
 renderDday();
 syncTopbarHeight();
 window.addEventListener('load', syncTopbarHeight);
+
+/* ── ④ CSV 불러오기 ─────────────────────────────────── */
+mountCsvTab({ setInput, showTab });
