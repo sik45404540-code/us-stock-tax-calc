@@ -266,7 +266,7 @@ function render() {
   // 관계별 한도 안내
   const rel = RELATIONS[state.relation];
   $('g-limit-hint').innerHTML = rel.limit
-    ? `이 관계의 10년 공제 한도는 <b>${won(rel.limit)}</b>입니다${rel.limit === 600_000_000 ? '. 10년 누계로 6억 원까지입니다.' : '.'}`
+    ? `이 관계의 10년 공제 한도는 <b>${won(rel.limit)}</b>입니다.`
     : '이 관계는 증여재산공제가 없습니다.';
 }
 
