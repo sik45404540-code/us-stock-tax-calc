@@ -2,7 +2,8 @@
 
 한국 거주자가 **미국주식 양도소득세**를 바로 계산하고, **연말 손실 상계로 세금을 0원으로 만드는 매도 주수**까지 역산하는 공개 웹 도구입니다.
 
-- **실서비스**: https://us-stock-tax-calc.pages.dev/
+- **공개 주소(현재)**: https://sik45404540-code.github.io/us-stock-tax-calc/ (GitHub Pages, 검증·임시)
+- **배포 목표**: Cloudflare Pages `us-stock-tax-calc` → https://us-stock-tax-calc.pages.dev/
 - **저장소**: https://github.com/sik45404540-code/us-stock-tax-calc (public)
 - **구성**: 순수 HTML/CSS/JS (프레임워크 없음) · 빌드 없음 · 정적 파일 그대로 배포 · 서버 없음 · 외부 API 호출 없음
 
@@ -64,7 +65,9 @@ tools/make-assets.py     OG·아이콘 생성 스크립트
 빌드 단계가 없으므로 저장소 루트를 그대로 정적 배포합니다.
 
 - Cloudflare Pages: 프로젝트 `us-stock-tax-calc`, 프레임워크 없음, 빌드 명령 없음, 출력 디렉터리 `/`
+- GitHub Pages: 저장소 Settings → Pages → Deploy from a branch → `main` / `/` (현재 임시 공개용)
 - 커스텀 도메인은 추후 애드센스 신청 시 연결
+- 자산 캐시: `index.html`의 `assets/style.css?v=N`·`assets/app.js?v=N` — 파일을 고치면 N을 올려야 방문자 브라우저에 바로 반영됩니다.
 
 ## 알아 둘 것
 
