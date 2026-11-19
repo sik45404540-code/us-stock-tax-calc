@@ -146,7 +146,7 @@ function renderResults() {
 
   $('out-total').textContent = fmt(r.totalTax);
   $('out-net').textContent = won(r.netGain);
-  $('out-deduction').textContent = `-${won(r.deduction)}`;
+  $('out-deduction').textContent = r.deduction > 0 ? `-${won(r.deduction)}` : '0원';
   $('out-base').textContent = won(r.taxableBase);
   $('out-income').textContent = won(r.incomeTax);
   $('out-local').textContent = won(r.localTax);
@@ -161,7 +161,10 @@ function renderResults() {
   const zeroTitle = $('zero-title');
   const zeroBody = $('zero-body');
 
-  if (r.totalTax > 0) {
+  if (!snapshot.profit && !snapshot.loss && !snapshot.expenses) {
+    note.textContent = '금액을 입력하면 바로 계산됩니다.';
+    zeroBox.hidden = true;
+  } else if (r.totalTax > 0) {
     note.innerHTML = `과세표준 <b>${won(r.taxableBase)}</b>에 22%(소득세 20% + 지방세 2%)를 적용한 금액입니다.`;
     zeroBox.hidden = true;
   } else {
