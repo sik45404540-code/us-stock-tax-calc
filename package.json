@@ -1,0 +1,11 @@
+{
+  "name": "us-stock-tax-calc",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "미국주식 양도소득세·손익통산 절세 계산기 (한국 거주자용)",
+  "scripts": {
+    "test": "node --test tests/",
+    "serve": "python3 -m http.server 4173"
+  }
+}

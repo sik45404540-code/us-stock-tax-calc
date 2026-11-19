@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="robots" content="noindex, nofollow" />
+<title>모바일 검수용 프리뷰 (390×844)</title>
+<style>
+  html, body { margin: 0; padding: 0; background: #fff; }
+  iframe { display: block; width: 390px; height: 844px; border: 0; background: #fff; }
+</style>
+</head>
+<body>
+<!-- 검수용: 배포 사이트를 아이폰 390×844 화면 크기로 띄운다. ?tab=plan|ledger 로 탭을 바꾼다. -->
+<iframe id="frame" src="/" title="미국주식 양도세 계산기 390x844 프리뷰"></iframe>
+<script>
+  const params = new URLSearchParams(location.search);
+  const tab = params.get('tab');
+  const scrollY = params.get('y');
+  const frame = document.getElementById('frame');
+  frame.addEventListener('load', () => {
+    if (tab) {
+      const btn = frame.contentDocument.querySelector(`.tab[data-tab="${tab}"]`);
+      if (btn) btn.click();
+    }
+    if (scrollY) frame.contentWindow.scrollTo(0, Number(scrollY));
+  });
+</script>
+</body>
+</html>
