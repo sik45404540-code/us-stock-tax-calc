@@ -19,7 +19,7 @@
   const scrollY = params.get('y');
   const frame = document.getElementById('frame');
   /* CDN 캐시를 피해 항상 최신 빌드를 띄운다 */
-  frame.src = `index.html?b=${Date.now()}`;
+  frame.src = `./?b=${Date.now()}`;
   frame.addEventListener('load', () => {
     if (tab) {
       const btn = frame.contentDocument.querySelector(`.tab[data-tab="${tab}"]`);

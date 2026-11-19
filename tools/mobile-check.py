@@ -102,7 +102,7 @@ with sync_playwright() as p:
     page.click("#tab-calc")
 
     # ── 2. 배당소득세 ────────────────────────────────
-    page.goto(f"{BASE}/dividend.html", wait_until="networkidle")
+    page.goto(f"{BASE}/dividend", wait_until="networkidle")
     check("dividend.h1", text(page, "h1"), "배당소득세 계산기")
     type_money(page, "#in-domestic", 15_000_000)
     type_money(page, "#in-us", 6_000_000)
@@ -114,13 +114,13 @@ with sync_playwright() as p:
     shot(page, "04-dividend-compare")
 
     # 2,000만 이하 분리과세
-    page.goto(f"{BASE}/dividend.html", wait_until="networkidle")
+    page.goto(f"{BASE}/dividend", wait_until="networkidle")
     type_money(page, "#in-domestic", 10_000_000)
     check("dividend.분리과세", text(page, "#out-total"), "1,540,000")
     check("dividend.종결안내", text(page, "#out-note"), "원천징수로 종결")
 
     # ── 3. ISA ───────────────────────────────────────
-    page.goto(f"{BASE}/isa.html", wait_until="networkidle")
+    page.goto(f"{BASE}/isa", wait_until="networkidle")
     check("isa.h1", text(page, "h1"), "ISA 절세 계산기")
     type_money(page, "#in-profit", 5_000_000)
     check("isa.일반형절세", text(page, "#out-saving"), "1,023,000")
@@ -132,7 +132,7 @@ with sync_playwright() as p:
     shot(page, "05-isa-result")
 
     # ── 4. 수수료 ────────────────────────────────────
-    page.goto(f"{BASE}/fee.html", wait_until="networkidle")
+    page.goto(f"{BASE}/fee", wait_until="networkidle")
     check("fee.h1", text(page, "h1"), "수수료·환전우대 비교기")
     check("fee.차이", text(page, "#out-diff"), "61,415")
     check("fee.A실수령", text(page, "#out-a"), "10,984,605")
@@ -144,24 +144,24 @@ with sync_playwright() as p:
     shot(page, "08-fee-breakdown")
 
     # ── 5. 정보 페이지 ───────────────────────────────
-    page.goto(f"{BASE}/about.html", wait_until="networkidle")
+    page.goto(f"{BASE}/about", wait_until="networkidle")
     check("about.h1", text(page, "h1"), "계산은 가볍게")
     shot(page, "09-about")
-    page.goto(f"{BASE}/contact.html", wait_until="networkidle")
+    page.goto(f"{BASE}/contact", wait_until="networkidle")
     check("contact.메일", text(page, "main"), "sik45404540@gmail.com")
     shot(page, "10-contact")
-    page.goto(f"{BASE}/privacy.html", wait_until="networkidle")
+    page.goto(f"{BASE}/privacy", wait_until="networkidle")
     check("privacy.광고고지", text(page, "main"), "Google AdSense")
 
     # ── 6. 링크·구조 점검 ────────────────────────────
     page.goto(f"{BASE}/", wait_until="networkidle")
     for href, want in [
-        ("a[href='dividend.html']", "dividend"),
-        ("a[href='isa.html']", "isa"),
-        ("a[href='fee.html']", "fee"),
-        ("a[href='about.html']", "about"),
-        ("a[href='contact.html']", "contact"),
-        ("a[href='privacy.html']", "privacy"),
+        ("a[href='dividend']", "dividend"),
+        ("a[href='isa']", "isa"),
+        ("a[href='fee']", "fee"),
+        ("a[href='about']", "about"),
+        ("a[href='contact']", "contact"),
+        ("a[href='privacy']", "privacy"),
     ]:
         check(f"link {want}", page.get_attribute(href, "href"), want)
 

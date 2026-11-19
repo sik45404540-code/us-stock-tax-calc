@@ -69,7 +69,7 @@ node --test tests/          # 46개 테스트 전부 통과
 모바일(390×844) 실입력 점검:
 
 ```bash
-python3 -m http.server 4173 &
+python3 tools/serve.py 4173 &
 python3 tools/mobile-check.py http://127.0.0.1:4173 local
 python3 tools/mobile-check.py https://us-stock-tax-calc.pages.dev live
 ```
@@ -109,6 +109,7 @@ preview-390x844.html     검수용 390×844 프리뷰(noindex)
 - Cloudflare Pages: 프로젝트 `us-stock-tax-calc`, 프레임워크 없음, 빌드 명령 없음, 출력 디렉터리 `/`
 - 커스텀 도메인 `taxmoa.com` / `www.taxmoa.com` 연결
 - 자산 캐시: `assets/style.css?v=4`·`assets/*.js?v=4` — 파일을 고치면 N을 올려야 방문자 브라우저에 바로 반영됩니다.
+- **주소 표기**: Cloudflare Pages는 `dividend.html`을 `/dividend`로 308 리다이렉트합니다. 그래서 canonical·og:url·사이트맵·내부 링크는 확장자 없는 주소(`https://taxmoa.com/dividend`)를 씁니다.
 
 ## 알아 둘 것
 
