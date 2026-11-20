@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 <meta name="theme-color" content="#0f2c4c" />
 <title>TaxPing 소개 | 계산 기준과 면책 안내</title>
-<meta name="description" content="TaxPing은 한국 거주자 미국주식 투자자를 위한 무료 세금 계산기 모음입니다. 양도세·배당세·ISA·연금계좌·수수료·증여세 계산기의 법령 근거와 기준일, 계산기의 한계와 면책을 안내합니다." />
+<meta name="description" content="TaxPing은 한국 거주자 미국주식 투자자를 위한 무료 세금 계산기 모음입니다. 양도세·배당세·ISA·연금계좌·연말정산·수수료·증여세 계산기의 법령 근거와 기준일, 계산기의 한계와 면책을 안내합니다." />
 <link rel="canonical" href="https://taxmoa.com/about" />
 <meta name="robots" content="index, follow" />
 <meta name="author" content="TaxPing" />
@@ -19,7 +19,7 @@
 <meta name="twitter:card" content="summary_large_image" />
 <link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png" />
-<link rel="stylesheet" href="assets/style.css?v=9" />
+<link rel="stylesheet" href="assets/style.css?v=10" />
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9604217493835454" crossorigin="anonymous"></script>
 </head>
 <body>
@@ -36,6 +36,7 @@
       <a href="dividend">배당세</a>
       <a href="isa">ISA</a>
       <a href="pension">연금·IRP</a>
+      <a href="yearend">연말정산</a>
       <a href="fee">수수료</a>
       <a href="gift">증여세</a>
       <a href="about" class="is-on" aria-current="page">소개</a>
@@ -80,7 +81,12 @@
       <p style="margin:0;font-size:13px;color:var(--muted)">수수료율과 환전우대율이 다르면 같은 주식도 손에 남는 돈이 달라집니다. <a href="fee">열어 보기</a></p>
     </div>
     <div class="card">
-      <h2 class="card-title">⑥ 증여세 · 배우자 증여 절세 계산기</h2>
+      <h2 class="card-title">⑥ 연말정산 환급금 시뮬레이터</h2>
+      <p class="card-sub">근로소득공제 · 인적공제 · 4대보험료 · 신용카드 · 월세 · 연금계좌 · 의료비·교육비·기부금</p>
+      <p style="margin:0;font-size:13px;color:var(--muted)">총급여와 공제 항목을 넣으면 2026년 귀속 결정세액과 기납부세액을 비교해 2027년 2월에 돌려받을 금액(또는 더 낼 금액)을 계산합니다. <a href="yearend">열어 보기</a></p>
+    </div>
+    <div class="card">
+      <h2 class="card-title">⑦ 증여세 · 배우자 증여 절세 계산기</h2>
       <p class="card-sub">관계별 10년 공제 · 혼인·출산 1억 원 · 세대생략 할증 · 주식 이월과세 1년</p>
       <p style="margin:0;font-size:13px;color:var(--muted)">누구에게 얼마를 증여할 때 세금이 얼마인지 단계별 영수증으로 보여 주고, 배우자에게 미국주식을 증여해 아끼는 양도세까지 비교합니다. <a href="gift">열어 보기</a></p>
     </div>
@@ -92,6 +98,7 @@
       <div class="meta-row"><dt>배당·금융소득</dt><dd>소득세법 제14·17·55·56·57·62·129조, 한미 조세조약 제12조</dd></div>
       <div class="meta-row"><dt>ISA</dt><dd>조세특례제한법 제91조의18</dd></div>
       <div class="meta-row"><dt>연금계좌</dt><dd>소득세법 제59조의3, 시행령 제40조의2·118조의2·118조의3</dd></div>
+      <div class="meta-row"><dt>연말정산</dt><dd>소득세법 제47·50·51·55·59·59조의2·59조의3·59조의4, 조세특례제한법 제92·95조의2·126조의2, 지방세법 제103조의3</dd></div>
       <div class="meta-row"><dt>증여세</dt><dd>상속세 및 증여세법 제53·53의2·55·56·57·58·69조, 소득세법 제97조의2</dd></div>
       <div class="meta-row"><dt>건강보험</dt><dd>국민건강보험법 시행규칙 제2조·별표 1의2</dd></div>
       <div class="meta-row"><dt>기준 연도</dt><dd>2026년 귀속</dd></div>
@@ -108,6 +115,7 @@
       <li>배당세는 배당가산(Gross-up 10%)과 배당세액공제를 반영하지만, 고배당기업 분리과세 특례와 비영업대금 이자(25%)는 반영하지 않았습니다.</li>
       <li>ISA는 수익의 단순 누적을 가정하며, 중도해지 추징과 금융사 수수료는 제외했습니다.</li>
       <li>연금계좌 세액공제는 본인 납입액만 계산합니다. 퇴직금 이전·계좌 간 이전 금액, 결정세액 한도, 2027년 납입분부터 적용되는 청년 퇴직연금 개정안은 반영하지 않았습니다.</li>
+      <li>연말정산은 근로소득만 계산합니다. 사업·임대·이자·배당 등 다른 소득, 표준세액공제, 난임·미숙아 의료비와 산후조리원(공제율이 다른 항목), 주택자금·청약·노란우산 공제는 반영하지 않았고, 4대보험료는 2026년 요율로 추정합니다.</li>
       <li>수수료 비교는 최소 수수료·이벤트·환율 변동을 반영하지 않습니다.</li>
       <li>증여세는 증여재산을 시가로 단순화했습니다. 부동산·비상장주식의 개별 평가, 부담부증여, 창업자금·가업승계 과세특례, 증여 의제는 반영하지 않았습니다.</li>
       <li>배우자 증여 비교의 양도세는 22% 단일세율과 기본공제 250만 원을 가정했습니다. 기본공제를 이미 쓴 해에는 결과가 달라집니다.</li>
@@ -121,7 +129,7 @@
       <div class="meta-row"><dt>사이트</dt><dd>TaxPing (taxmoa.com)</dd></div>
       <div class="meta-row"><dt>운영</dt><dd>개인 운영 · 대한민국</dd></div>
       <div class="meta-row"><dt>문의</dt><dd><a href="mailto:sik45404540@gmail.com">sik45404540@gmail.com</a></dd></div>
-      <div class="meta-row"><dt>기준일</dt><dd>2026년 11월 19일</dd></div>
+      <div class="meta-row"><dt>기준일</dt><dd>2026년 11월 21일</dd></div>
     </dl>
     <p style="margin-top:14px">계산 결과가 이상하거나 법령이 바뀐 부분을 발견하셨다면 <a href="contact">문의·오류 제보</a>로 알려 주세요. 확인 후 계산기와 해설을 함께 고칩니다.</p>
 
@@ -130,6 +138,7 @@
         <a class="hub-card" href="./"><span class="hub-ico" aria-hidden="true">↗</span><h3>양도세 계산기</h3><p>250만 원 공제와 세금 0원 역산</p><span class="hub-go">열기 →</span></a>
         <a class="hub-card" href="dividend"><span class="hub-ico" aria-hidden="true">%</span><h3>배당세 계산기</h3><p>2,000만 원 종합과세와 건강보험</p><span class="hub-go">열기 →</span></a>
         <a class="hub-card" href="isa"><span class="hub-ico" aria-hidden="true">ISA</span><h3>ISA 절세 계산기</h3><p>비과세 200만·400만 원 비교</p><span class="hub-go">열기 →</span></a>
+        <a class="hub-card" href="yearend"><span class="hub-ico" aria-hidden="true">연말</span><h3>연말정산 환급금</h3><p>결정세액과 기납부세액 비교</p><span class="hub-go">열기 →</span></a>
         <a class="hub-card" href="fee"><span class="hub-ico" aria-hidden="true">₩</span><h3>수수료 비교기</h3><p>환전우대까지 반영한 실수령</p><span class="hub-go">열기 →</span></a>
         <a class="hub-card" href="gift"><span class="hub-ico" aria-hidden="true">🎁</span><h3>증여세 계산기</h3><p>10년 공제와 배우자 증여 절세</p><span class="hub-go">열기 →</span></a>
       </div>
@@ -141,7 +150,7 @@
   <div class="wrap">
     <p class="foot-brand">TaxPing</p>
     <p class="foot-links">
-      <a href="./">양도세 계산기</a><a href="dividend">배당세 계산기</a><a href="isa">ISA 계산기</a><a href="pension">연금·IRP 세액공제</a><a href="fee">수수료 비교</a><a href="gift">증여세 계산기</a>
+      <a href="./">양도세 계산기</a><a href="dividend">배당세 계산기</a><a href="isa">ISA 계산기</a><a href="pension">연금·IRP 세액공제</a><a href="yearend">연말정산 환급금</a><a href="fee">수수료 비교</a><a href="gift">증여세 계산기</a>
       <a href="about">사이트 소개</a><a href="contact">문의</a><a href="privacy">개인정보처리방침</a>
     </p>
     <p class="foot-note">이 사이트의 계산 결과는 참고용이며 세무·투자 자문이 아닙니다. 모든 계산은 이용자 기기에서만 이루어지고 입력값은 서버로 전송되지 않습니다.</p>
