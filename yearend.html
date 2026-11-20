@@ -95,7 +95,17 @@
   ]
 }
 </script>
-  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9604217493835454" crossorigin="anonymous"></script>
+  <!-- Google AdSense — 승인된 도메인(taxmoa.com)에서만 로더를 붙입니다. pages.dev·github.io 쌍둥이 주소에는 광고 코드가 실리지 않습니다. -->
+  <script>
+    (function () {
+      if (location.hostname !== 'taxmoa.com') return;
+      var s = document.createElement('script');
+      s.async = true;
+      s.src = 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9604217493835454';
+      s.crossOrigin = 'anonymous';
+      document.head.appendChild(s);
+    })();
+  </script>
 </head>
 <body>
 <a class="skip" href="#calc">계산기로 바로가기</a>
